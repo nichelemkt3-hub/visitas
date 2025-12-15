@@ -1,65 +1,84 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Captura de Localização</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Registro de Visita</title>
 </head>
-<body style="font-family: Arial; padding:20px; text-align:center;">
 
-<h2>Captura de Localização da Visita</h2>
-<p id="statusGPS">📍 GPS: não capturado</p>
-<p id="statusRegiao">🌍 Região: não identificada</p>
-<button onclick="capturarGPS()">Capturar localização</button><br><br>
-<div id="linkForm" style="display:none;">
-  <p>✅ GPS capturado! Clique abaixo para abrir o formulário:</p>
-  <a id="btnForm" href="" target="_blank">Abrir Formulário</a>
-</div>
+<body style="font-family:Arial;padding:20px;text-align:center">
+
+<h2>Registro de Visita</h2>
+
+<p id="gps">📍 GPS não capturado</p>
+<p id="endereco">🏠 Endereço não identificado</p>
+
+<input id="numero" placeholder="Número do local" style="width:90%" /><br><br>
+
+<button onclick="capturar()">Capturar localização</button><br><br>
+<button onclick="enviar()">Confirmar visita</button>
 
 <script>
-let lat = null;
-let lng = null;
-let regiao = '';
+const API_URL = "https://script.google.com/macros/s/AKfycbw1TEchvsiw_w_Xv8em0ud8pXJQJgwPoosoEMI6k05IFO0-XEPbec_NHq4o2fwx-isIxA/exec";
 
-// Substitua pelo link do seu Google Form
-const FORM_BASE_URL = "https://docs.google.com/forms/d/e/1FAIpQLSfJmhbQbklfwYP6XxFo-8hsy-9zsY8YvzmRdkKpCvh2BnpJ_Q/viewform";
+let dados = {};
 
-async function capturarGPS() {
-  if (!navigator.geolocation) {
-    alert("Geolocalização não suportada neste navegador");
+function capturar() {
+  navigator.geolocation.getCurrentPosition(async pos => {
+    const lat = pos.coords.latitude;
+    const lng = pos.coords.longitude;
+
+    document.getElementById("gps").innerText =
+      `📍 ${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+
+    const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`;
+
+    const r = await fetch(url);
+    const j = await r.json();
+
+    dados = {
+      lat,
+      lng,
+      rua: j.address.road || '',
+      bairro: j.address.suburb || j.address.neighbourhood || '',
+      cidade: j.address.city || j.address.town || '',
+      estado: j.address.state || '',
+      cep: j.address.postcode || ''
+    };
+
+    document.getElementById("endereco").innerText =
+      `${dados.rua}, ${dados.bairro} - ${dados.cidade}/${dados.estado}`;
+
+  }, err => {
+    alert("Erro ao capturar GPS");
+  }, { enableHighAccuracy: true });
+}
+
+async function enviar() {
+  if (!dados.lat) {
+    alert("Capture o GPS primeiro");
     return;
   }
 
-  navigator.geolocation.getCurrentPosition(async pos => {
-    lat = pos.coords.latitude;
-    lng = pos.coords.longitude;
-    document.getElementById("statusGPS").innerText =
-      `📍 GPS capturado: ${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+  dados.numero = document.getElementById("numero").value;
 
-    // Geocoding via OpenStreetMap Nominatim
-    try {
-      const url = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`;
-      const response = await fetch(url);
-      const data = await response.json();
+  const r = await fetch(API_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(dados)
+  });
 
-      regiao = `${data.address.city || data.address.town || data.address.village || ''} - ${data.address.state || ''}`;
-      document.getElementById("statusRegiao").innerText = `🌍 Região: ${regiao}`;
+  const j = await r.json();
 
-      // Gerar link para abrir Form já com parâmetros
-      const urlForm = `${FORM_BASE_URL}?usp=pp_url&entry.1111111111=${lat}&entry.2222222222=${lng}&entry.3333333333=${encodeURIComponent(regiao)}`;
-      const btnForm = document.getElementById("btnForm");
-      btnForm.href = urlForm;
-      document.getElementById("linkForm").style.display = "block";
-
-    } catch (e) {
-      console.error(e);
-      document.getElementById("statusRegiao").innerText = "🌍 Região: não identificada";
-    }
-
-  }, err => {
-    alert("Erro ao capturar localização: " + err.message);
-    console.error(err);
-  }, { enableHighAccuracy: true, timeout: 15000 });
+  if (j.erro) {
+    alert("Erro: " + j.erro);
+  } else {
+    alert(
+      "Visita registrada!\n\nCódigo:\n" +
+      j.codigo +
+      "\n\nUse este código no formulário."
+    );
+  }
 }
 </script>
 
