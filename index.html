@@ -21,7 +21,7 @@
 <p id="statusFoto">📸 Foto: não capturada</p>
 <button onclick="tirarFoto()">Tirar foto</button><br><br>
 
-<button onclick="enviar()">Confirmar visita</button>
+<button id="btnEnviar" onclick="enviar()">Confirmar visita</button>
 
 <canvas id="canvas" style="display:none;"></canvas>
 
@@ -34,6 +34,10 @@ let streamAtual = null;
 
 const video = document.getElementById("video");
 const canvas = document.getElementById("canvas");
+const btnEnviar = document.getElementById("btnEnviar");
+
+// Substitua pelo URL do seu Web App do Apps Script
+const API_URL = "https://script.google.com/macros/s/AKfycbzS710MOHDzouUlgickK6WUsu7IDonfts_EnK_on0hRWpIy05crraSoiQbbKQC-RfPpmg/exec";
 
 /* ===== CÂMERA ===== */
 function iniciarCamera() {
@@ -56,10 +60,7 @@ function trocarCamera() {
 }
 
 function tirarFoto() {
-  if (!video.videoWidth) {
-    alert("Câmera não pronta");
-    return;
-  }
+  if (!video.videoWidth) { alert("Câmera não pronta"); return; }
   canvas.width = video.videoWidth;
   canvas.height = video.videoHeight;
   canvas.getContext("2d").drawImage(video, 0, 0);
@@ -69,10 +70,7 @@ function tirarFoto() {
 
 /* ===== GPS ===== */
 function capturarGPS() {
-  if (!navigator.geolocation) {
-    alert("Geolocalização não suportada neste navegador");
-    return;
-  }
+  if (!navigator.geolocation) { alert("Geolocalização não suportada"); return; }
 
   navigator.geolocation.getCurrentPosition(
     pos => {
@@ -81,49 +79,49 @@ function capturarGPS() {
       document.getElementById("statusGPS").innerText =
         `📍 GPS capturado: ${lat.toFixed(5)}, ${lng.toFixed(5)}`;
     },
-    err => {
-      alert("Erro ao capturar localização: " + err.message);
-      console.error(err);
-    },
+    err => { alert("Erro ao capturar localização: " + err.message); console.error(err); },
     { enableHighAccuracy: true, timeout: 15000 }
   );
 }
 
-/* ===== ENVIO via JSONP ===== */
-function enviar() {
+/* ===== ENVIO ===== */
+async function enviar() {
   if (!lat || !lng) { alert("Capture o GPS antes de confirmar"); return; }
   if (!imagem) { alert("Tire a foto antes de confirmar"); return; }
 
-  const dados = {
-    email: email.value,
-    local: local.value,
-    lat,
-    lng,
-    fotoBase64: imagem
-  };
+  btnEnviar.disabled = true;
+  btnEnviar.innerText = "Enviando...";
 
-  const script = document.createElement('script');
-  const callbackName = 'callback' + Date.now();
+  try {
+    const response = await fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email: email.value,
+        local: local.value,
+        lat,
+        lng,
+        fotoBase64: imagem
+      })
+    });
 
-  window[callbackName] = function(response) {
-    if (response.erro) {
-      alert("Erro ao validar visita: " + response.erro);
-    } else {
-      alert("Visita validada com sucesso!\nCódigo: " + response.codigo);
-    }
-    delete window[callbackName];
-    document.body.removeChild(script);
-  };
+    const json = await response.json();
 
-  const url = "https://script.google.com/macros/s/AKfycbzwGAtV_PFy0k_NG1lo5Otv1WIJAuw60z6t_Or2huWFUv-AQ_2DTGhJs5_1fIGLRPRneg/exec"
-    + "?callback=" + callbackName
-    + "&dados=" + encodeURIComponent(JSON.stringify(dados));
+    if (json.erro) throw new Error(json.erro);
 
-  script.src = url;
-  document.body.appendChild(script);
+    alert("Visita validada com sucesso!\nCódigo: " + json.codigo);
+    btnEnviar.innerText = "Confirmar visita";
+    btnEnviar.disabled = false;
+
+  } catch (e) {
+    alert("Erro ao validar visita: " + e.message);
+    console.error(e);
+    btnEnviar.innerText = "Confirmar visita";
+    btnEnviar.disabled = false;
+  }
 }
 
-/* ===== INICIAR CÂMERA ===== */
+/* ===== INICIAR CÂMERA AUTOMATICAMENTE ===== */
 window.onload = iniciarCamera;
 </script>
 
