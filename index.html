@@ -5,55 +5,65 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Validação de Visita</title>
 </head>
+
 <body style="font-family: Arial; padding:20px; text-align:center;">
 
 <h3>Validação de Visita</h3>
 
-<input id="email" placeholder="E-mail" required><br><br>
-<input id="local" placeholder="Local da visita" required><br><br>
+<input id="email" placeholder="E-mail" style="width:90%" required><br><br>
+<input id="local" placeholder="Local da visita" style="width:90%" required><br><br>
 
-<button onclick="capturarGPS()">📍 Capturar localização</button><br><br>
+<p id="statusGPS">📍 GPS: não capturado</p>
+<button onclick="capturarGPS()">Capturar localização</button><br><br>
 
 <video id="video" autoplay playsinline width="300"></video><br>
-<button onclick="trocarCamera()">🔄 Trocar câmera</button><br><br>
-<button onclick="tirarFoto()">📸 Tirar foto</button><br><br>
+<button onclick="trocarCamera()">Trocar câmera</button><br><br>
 
-<button onclick="enviar()">✅ Confirmar visita</button>
+<p id="statusFoto">📸 Foto: não capturada</p>
+<button onclick="tirarFoto()">Tirar foto</button><br><br>
+
+<button onclick="enviar()">Confirmar visita</button>
 
 <canvas id="canvas" style="display:none;"></canvas>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbyfTHYrw304N3gYPGu0AADtg4adB8UqcWIPNEKmraL9r3DOJ1FqL4QMS2FMknDKttt73w";
+const API_URL = "https://script.google.com/macros/s/AKfycbyfTHYrw304N3gYPGu0AADtg4adB8UqcWIPNEKmraL9r3DOJ1FqL4QMS2FMknDKttt73w/exec";
 
-let lat, lng, imagem;
+let lat = null;
+let lng = null;
+let imagem = null;
 let usandoTraseira = true;
-let streamAtual;
+let streamAtual = null;
 
+/* GPS */
 function capturarGPS() {
   navigator.geolocation.getCurrentPosition(
     pos => {
       lat = pos.coords.latitude;
       lng = pos.coords.longitude;
-      alert("Localização capturada");
+      document.getElementById("statusGPS").innerText =
+        `📍 GPS capturado: ${lat.toFixed(5)}, ${lng.toFixed(5)}`;
     },
-    () => alert("Erro ao capturar localização"),
+    err => {
+      alert("Erro ao capturar localização");
+      console.error(err);
+    },
     { enableHighAccuracy: true, timeout: 15000 }
   );
 }
 
+/* CÂMERA */
 function iniciarCamera() {
   if (streamAtual) streamAtual.getTracks().forEach(t => t.stop());
 
   navigator.mediaDevices.getUserMedia({
-    video: { facingMode: usandoTraseira ? { exact: "environment" } : "user" }
+    video: { facingMode: usandoTraseira ? "environment" : "user" }
   }).then(stream => {
     streamAtual = stream;
     video.srcObject = stream;
-  }).catch(() => {
-    navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {
-      streamAtual = stream;
-      video.srcObject = stream;
-    });
+  }).catch(err => {
+    alert("Erro ao acessar câmera");
+    console.error(err);
   });
 }
 
@@ -63,37 +73,62 @@ function trocarCamera() {
 }
 
 function tirarFoto() {
+  if (!video.videoWidth) {
+    alert("Câmera não pronta");
+    return;
+  }
+
   canvas.width = video.videoWidth;
   canvas.height = video.videoHeight;
   canvas.getContext("2d").drawImage(video, 0, 0);
   imagem = canvas.toDataURL("image/jpeg");
-  alert("Foto capturada");
+
+  document.getElementById("statusFoto").innerText = "📸 Foto capturada com sucesso";
 }
 
+/* ENVIO */
 async function enviar() {
-  if (!lat || !imagem) {
-    alert("GPS e foto são obrigatórios");
+  if (!lat || !lng) {
+    alert("Capture o GPS antes de confirmar");
     return;
   }
 
-  const resposta = await fetch(API_URL, {
-    method: "POST",
-    body: JSON.stringify({
-      email: email.value,
-      local: local.value,
-      lat,
-      lng,
-      fotoBase64: imagem
-    })
-  });
+  if (!imagem) {
+    alert("Tire a foto antes de confirmar");
+    return;
+  }
 
-  const json = await resposta.json();
+  try {
+    const resposta = await fetch(API_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        email: email.value,
+        local: local.value,
+        lat,
+        lng,
+        fotoBase64: imagem
+      })
+    });
 
-  alert(
-    "Visita validada!\n\n" +
-    "Código:\n" + json.codigo +
-    "\n\nVolte ao formulário e informe este código."
-  );
+    if (!resposta.ok) {
+      throw new Error("Erro ao enviar dados");
+    }
+
+    const json = await resposta.json();
+
+    alert(
+      "Visita validada com sucesso!\n\n" +
+      "Código:\n" + json.codigo +
+      "\n\nVolte ao formulário e informe este código."
+    );
+
+  } catch (e) {
+    alert("Erro ao validar visita. Tente novamente.");
+    console.error(e);
+  }
 }
 
 iniciarCamera();
