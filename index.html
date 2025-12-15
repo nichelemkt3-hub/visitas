@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Validação de Visita</title>
 </head>
-
 <body style="font-family: Arial; padding:20px; text-align:center;">
 
 <h3>Validação de Visita</h3>
@@ -27,7 +26,7 @@
 <canvas id="canvas" style="display:none;"></canvas>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbzoUiV85bnpqJgIaRgEKSC-2yzca5tNwitDqgJxS_uBBt2AbvKmx2vUBOn75OsvhrVEaw/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbwO9iYAUHIqqnmRQQm_7Hhztx56Zhsxm_2BBZp6e7B7Kr1ziqArwGWHge657OKjmkMp8w/exec";
 
 let lat = null;
 let lng = null;
@@ -35,24 +34,10 @@ let imagem = null;
 let usandoTraseira = true;
 let streamAtual = null;
 
-/* GPS */
-function capturarGPS() {
-  navigator.geolocation.getCurrentPosition(
-    pos => {
-      lat = pos.coords.latitude;
-      lng = pos.coords.longitude;
-      document.getElementById("statusGPS").innerText =
-        `📍 GPS capturado: ${lat.toFixed(5)}, ${lng.toFixed(5)}`;
-    },
-    err => {
-      alert("Erro ao capturar localização");
-      console.error(err);
-    },
-    { enableHighAccuracy: true, timeout: 15000 }
-  );
-}
+const video = document.getElementById("video");
+const canvas = document.getElementById("canvas");
 
-/* CÂMERA */
+/* ===== CÂMERA ===== */
 function iniciarCamera() {
   if (streamAtual) streamAtual.getTracks().forEach(t => t.stop());
 
@@ -86,7 +71,29 @@ function tirarFoto() {
   document.getElementById("statusFoto").innerText = "📸 Foto capturada com sucesso";
 }
 
-/* ENVIO */
+/* ===== GPS ===== */
+function capturarGPS() {
+  if (!navigator.geolocation) {
+    alert("Geolocalização não suportada neste navegador");
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      lat = pos.coords.latitude;
+      lng = pos.coords.longitude;
+      document.getElementById("statusGPS").innerText =
+        `📍 GPS capturado: ${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+    },
+    err => {
+      alert("Erro ao capturar localização");
+      console.error(err);
+    },
+    { enableHighAccuracy: true, timeout: 15000 }
+  );
+}
+
+/* ===== ENVIO ===== */
 async function enviar() {
   if (!lat || !lng) {
     alert("Capture o GPS antes de confirmar");
@@ -131,3 +138,10 @@ async function enviar() {
     console.error(e);
   }
 }
+
+/* ===== INICIAR CÂMERA AUTOMATICAMENTE ===== */
+window.onload = iniciarCamera;
+</script>
+
+</body>
+</html>
