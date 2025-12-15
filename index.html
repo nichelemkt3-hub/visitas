@@ -26,7 +26,7 @@
 <canvas id="canvas" style="display:none;"></canvas>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbwO9iYAUHIqqnmRQQm_7Hhztx56Zhsxm_2BBZp6e7B7Kr1ziqArwGWHge657OKjmkMp8w/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbyXX7vlAC5UzszrfbNi_kMRLMxW8Y-JxN7G2du_ecQ31o7Bij0sT2fDt-URlbHNRtTI3w/exec";
 
 let lat = null;
 let lng = null;
@@ -47,7 +47,7 @@ function iniciarCamera() {
     streamAtual = stream;
     video.srcObject = stream;
   }).catch(err => {
-    alert("Erro ao acessar câmera");
+    alert("Erro ao acessar câmera: " + err.message);
     console.error(err);
   });
 }
@@ -86,7 +86,7 @@ function capturarGPS() {
         `📍 GPS capturado: ${lat.toFixed(5)}, ${lng.toFixed(5)}`;
     },
     err => {
-      alert("Erro ao capturar localização");
+      alert("Erro ao capturar localização: " + err.message);
       console.error(err);
     },
     { enableHighAccuracy: true, timeout: 15000 }
