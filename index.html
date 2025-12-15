@@ -101,6 +101,7 @@ async function enviar() {
   try {
     const resposta = await fetch(API_URL, {
       method: "POST",
+      mode: "cors",
       headers: {
         "Content-Type": "application/json"
       },
@@ -113,11 +114,11 @@ async function enviar() {
       })
     });
 
-    if (!resposta.ok) {
-      throw new Error("Erro ao enviar dados");
-    }
-
     const json = await resposta.json();
+
+    if (json.erro) {
+      throw new Error(json.erro);
+    }
 
     alert(
       "Visita validada com sucesso!\n\n" +
@@ -126,13 +127,7 @@ async function enviar() {
     );
 
   } catch (e) {
-    alert("Erro ao validar visita. Tente novamente.");
+    alert("Erro ao validar visita: " + e.message);
     console.error(e);
   }
 }
-
-iniciarCamera();
-</script>
-
-</body>
-</html>
