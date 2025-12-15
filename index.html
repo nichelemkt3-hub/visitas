@@ -5,31 +5,98 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Validação de Visita</title>
 </head>
-<body style="font-family: Arial; text-align:center; padding:40px;">
+<body style="font-family: Arial; padding:20px; text-align:center;">
 
 <h3>Validação de Visita</h3>
 
-<p>Se esta página abriu dentro de um aplicativo, toque no botão abaixo:</p>
+<input id="email" placeholder="E-mail" required><br><br>
+<input id="local" placeholder="Local da visita" required><br><br>
 
-<a href="https://script.google.com/macros/s/AKfycbxUet3i2-C1D2ioT62exffCmVKnODRtBj_0HhH0WGbKu6ek_gGsJvnH3LvMtO-HSENspQ/exec"
-   target="_blank"
-   style="
-     display:inline-block;
-     padding:15px 25px;
-     background:#1a73e8;
-     color:#fff;
-     text-decoration:none;
-     border-radius:6px;
-     font-size:16px;
-   ">
-👉 Abrir no navegador
-</a>
+<button onclick="capturarGPS()">📍 Capturar localização</button><br><br>
+
+<video id="video" autoplay playsinline width="300"></video><br>
+<button onclick="trocarCamera()">🔄 Trocar câmera</button><br><br>
+<button onclick="tirarFoto()">📸 Tirar foto</button><br><br>
+
+<button onclick="enviar()">✅ Confirmar visita</button>
+
+<canvas id="canvas" style="display:none;"></canvas>
 
 <script>
-  // tenta redirecionar automaticamente
-  setTimeout(() => {
-    window.location.href = "https://script.google.com/macros/s/AKfycbxUet3i2-C1D2ioT62exffCmVKnODRtBj_0HhH0WGbKu6ek_gGsJvnH3LvMtO-HSENspQ/exec";
-  }, 800);
+const API_URL = "https://script.google.com/macros/s/AKfycbyfTHYrw304N3gYPGu0AADtg4adB8UqcWIPNEKmraL9r3DOJ1FqL4QMS2FMknDKttt73w";
+
+let lat, lng, imagem;
+let usandoTraseira = true;
+let streamAtual;
+
+function capturarGPS() {
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      lat = pos.coords.latitude;
+      lng = pos.coords.longitude;
+      alert("Localização capturada");
+    },
+    () => alert("Erro ao capturar localização"),
+    { enableHighAccuracy: true, timeout: 15000 }
+  );
+}
+
+function iniciarCamera() {
+  if (streamAtual) streamAtual.getTracks().forEach(t => t.stop());
+
+  navigator.mediaDevices.getUserMedia({
+    video: { facingMode: usandoTraseira ? { exact: "environment" } : "user" }
+  }).then(stream => {
+    streamAtual = stream;
+    video.srcObject = stream;
+  }).catch(() => {
+    navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {
+      streamAtual = stream;
+      video.srcObject = stream;
+    });
+  });
+}
+
+function trocarCamera() {
+  usandoTraseira = !usandoTraseira;
+  iniciarCamera();
+}
+
+function tirarFoto() {
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+  canvas.getContext("2d").drawImage(video, 0, 0);
+  imagem = canvas.toDataURL("image/jpeg");
+  alert("Foto capturada");
+}
+
+async function enviar() {
+  if (!lat || !imagem) {
+    alert("GPS e foto são obrigatórios");
+    return;
+  }
+
+  const resposta = await fetch(API_URL, {
+    method: "POST",
+    body: JSON.stringify({
+      email: email.value,
+      local: local.value,
+      lat,
+      lng,
+      fotoBase64: imagem
+    })
+  });
+
+  const json = await resposta.json();
+
+  alert(
+    "Visita validada!\n\n" +
+    "Código:\n" + json.codigo +
+    "\n\nVolte ao formulário e informe este código."
+  );
+}
+
+iniciarCamera();
 </script>
 
 </body>
