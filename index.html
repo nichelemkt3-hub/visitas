@@ -24,8 +24,8 @@ let lng = null;
 let regiao = '';
 const btnEnviar = document.getElementById("btnEnviar");
 
-// Substitua pelo URL do seu Web App do Apps Script
-const API_URL = "https://script.google.com/macros/s/AKfycbycGbnWXxs2P5uidLH3VUUMXg9vXnTIauPzXR2T3qgftmKOyXIUONW_SLGjiEbnfQbIzA/exec";
+// Substitua pelo URL do seu Web App do Apps Script (deploy)
+const API_URL = "https://script.google.com/macros/s/AKfycbwoMhv4uuKy38jTvF6ee3r9-Thi_JtPA5SF6BIofptANdBglkTzeYdW9TeOSSAdL9kk7w/exec";
 
 /* ===== GPS + Geocoding ===== */
 async function capturarGPS() {
@@ -40,13 +40,12 @@ async function capturarGPS() {
     document.getElementById("statusGPS").innerText =
       `📍 GPS capturado: ${lat.toFixed(5)}, ${lng.toFixed(5)}`;
 
-    // Chama OpenStreetMap Nominatim para geocoding reverso
+    // Geocoding via OpenStreetMap Nominatim
     try {
       const url = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`;
       const response = await fetch(url);
       const data = await response.json();
 
-      // Pode pegar cidade, bairro, estado, país
       regiao = `${data.address.city || data.address.town || data.address.village || ''} - ${data.address.state || ''}`;
       document.getElementById("statusRegiao").innerText = `🌍 Região: ${regiao}`;
 
@@ -74,6 +73,7 @@ async function enviar() {
   try {
     const response = await fetch(API_URL, {
       method: "POST",
+      mode: "cors",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         email: document.getElementById("email").value,
