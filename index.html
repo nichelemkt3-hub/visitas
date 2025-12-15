@@ -26,8 +26,6 @@
 <canvas id="canvas" style="display:none;"></canvas>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbyXX7vlAC5UzszrfbNi_kMRLMxW8Y-JxN7G2du_ecQ31o7Bij0sT2fDt-URlbHNRtTI3w/exec";
-
 let lat = null;
 let lng = null;
 let imagem = null;
@@ -62,12 +60,10 @@ function tirarFoto() {
     alert("Câmera não pronta");
     return;
   }
-
   canvas.width = video.videoWidth;
   canvas.height = video.videoHeight;
   canvas.getContext("2d").drawImage(video, 0, 0);
   imagem = canvas.toDataURL("image/jpeg");
-
   document.getElementById("statusFoto").innerText = "📸 Foto capturada com sucesso";
 }
 
@@ -93,53 +89,41 @@ function capturarGPS() {
   );
 }
 
-/* ===== ENVIO ===== */
-async function enviar() {
-  if (!lat || !lng) {
-    alert("Capture o GPS antes de confirmar");
-    return;
-  }
+/* ===== ENVIO via JSONP ===== */
+function enviar() {
+  if (!lat || !lng) { alert("Capture o GPS antes de confirmar"); return; }
+  if (!imagem) { alert("Tire a foto antes de confirmar"); return; }
 
-  if (!imagem) {
-    alert("Tire a foto antes de confirmar");
-    return;
-  }
+  const dados = {
+    email: email.value,
+    local: local.value,
+    lat,
+    lng,
+    fotoBase64: imagem
+  };
 
-  try {
-    const resposta = await fetch(API_URL, {
-      method: "POST",
-      mode: "cors",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        email: email.value,
-        local: local.value,
-        lat,
-        lng,
-        fotoBase64: imagem
-      })
-    });
+  const script = document.createElement('script');
+  const callbackName = 'callback' + Date.now();
 
-    const json = await resposta.json();
-
-    if (json.erro) {
-      throw new Error(json.erro);
+  window[callbackName] = function(response) {
+    if (response.erro) {
+      alert("Erro ao validar visita: " + response.erro);
+    } else {
+      alert("Visita validada com sucesso!\nCódigo: " + response.codigo);
     }
+    delete window[callbackName];
+    document.body.removeChild(script);
+  };
 
-    alert(
-      "Visita validada com sucesso!\n\n" +
-      "Código:\n" + json.codigo +
-      "\n\nVolte ao formulário e informe este código."
-    );
+  const url = "https://script.google.com/macros/s/AKfycbzwGAtV_PFy0k_NG1lo5Otv1WIJAuw60z6t_Or2huWFUv-AQ_2DTGhJs5_1fIGLRPRneg/exec"
+    + "?callback=" + callbackName
+    + "&dados=" + encodeURIComponent(JSON.stringify(dados));
 
-  } catch (e) {
-    alert("Erro ao validar visita: " + e.message);
-    console.error(e);
-  }
+  script.src = url;
+  document.body.appendChild(script);
 }
 
-/* ===== INICIAR CÂMERA AUTOMATICAMENTE ===== */
+/* ===== INICIAR CÂMERA ===== */
 window.onload = iniciarCamera;
 </script>
 
