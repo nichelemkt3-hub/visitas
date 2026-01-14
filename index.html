@@ -3,7 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>Validação de Visita</title>
+
+  <!-- 🔹 PWA -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#1a73e8">
+
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -21,6 +27,7 @@
     }
   </style>
 </head>
+
 <body>
 
 <h2>Validação de Visita</h2>
@@ -40,18 +47,19 @@ let latitude = null;
 let longitude = null;
 let fotoBase64 = null;
 
-// 🔴 COLE A URL DO SEU WEBAPP AQUI
+// 🔴 URL DO WEBAPP (OK)
 const API_URL = "https://script.google.com/macros/s/AKfycbxiEIHlrt6tX2-o3N-oFvDn3aWtZ9ClGEUtInbsXJm6r6t-gRR2wrqj1TYOH8r4KhFJMg/exec";
 
 function capturarLocalizacao() {
-  navigator.geolocation.getCurrentPosition(pos => {
-    latitude = pos.coords.latitude;
-    longitude = pos.coords.longitude;
-    document.getElementById("localizacao").innerText =
-      `Latitude: ${latitude} | Longitude: ${longitude}`;
-  }, err => {
-    alert("Erro ao obter localização");
-  });
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      latitude = pos.coords.latitude;
+      longitude = pos.coords.longitude;
+      document.getElementById("localizacao").innerText =
+        `Latitude: ${latitude} | Longitude: ${longitude}`;
+    },
+    () => alert("Erro ao obter localização")
+  );
 }
 
 function abrirCamera() {
@@ -84,13 +92,10 @@ function enviar() {
   })
   .then(r => r.json())
   .then(res => {
-    if (res.codigo) {
-      document.getElementById("status").innerText =
-        "Visita confirmada! Código: " + res.codigo;
-    } else {
-      document.getElementById("status").innerText =
-        "Erro: " + res.erro;
-    }
+    document.getElementById("status").innerText =
+      res.codigo
+        ? "Visita confirmada! Código: " + res.codigo
+        : "Erro: " + res.erro;
   })
   .catch(() => {
     document.getElementById("status").innerText =
