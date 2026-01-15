@@ -8,7 +8,7 @@
 <style>
   body {
     font-family: Arial, sans-serif;
-    background: linear-gradient(135deg, #6a1b9a, #9c27b0, #ffca28);
+    background: linear-gradient(90deg, #6a1b9a, #9c27b0, #ffca28); /* esquerda → direita */
     padding: 20px;
     color: #333;
   }
@@ -17,7 +17,7 @@
     background: #fff;
     max-width: 500px;
     margin: auto;
-    padding: 25px;
+    padding: 35px 25px;
     border-radius: 16px;
     box-shadow: 0 15px 40px rgba(0,0,0,0.25);
   }
@@ -36,7 +36,7 @@
   input, select, textarea, button {
     width: 100%;
     padding: 12px;
-    margin-top: 6px;
+    margin-top: 10px;
     border-radius: 8px;
     border: 1px solid #ccc;
     font-size: 15px;
@@ -53,6 +53,7 @@
     margin-top: 15px;
     font-weight: bold;
     cursor: pointer;
+    font-size: 16px;
   }
 
   button:hover {
@@ -61,7 +62,7 @@
 
   img {
     max-width: 100%;
-    margin-top: 10px;
+    height: auto;
     border-radius: 10px;
   }
 
@@ -69,79 +70,112 @@
     font-size: 14px;
     margin-top: 6px;
   }
+
+  /* Centraliza conteúdo dentro do card */
+  .card > * {
+    text-align: left;
+  }
+
+  /* Tela inicial */
+  #intro button {
+    max-width: 200px;
+  }
 </style>
 </head>
 
 <body>
 
-<div class="card">
-  <!-- Logo Nichele -->
-  <div style="text-align:center; margin-bottom:20px;">
-    <img src="https://tfbmsm.vtexassets.com/assets/vtex.file-manager-graphql/images/339595d6-1e8d-4ba1-a477-f0abfddc7d49___27fff744076908e95c038561a5cb6669.jpg"
-         style="max-width:180px; border-radius:12px;">
+<!-- TELA INICIAL -->
+<div id="intro" style="text-align:center; margin-top:50px;">
+  <img src="https://tfbmsm.vtexassets.com/assets/vtex.file-manager-graphql/images/339595d6-1e8d-4ba1-a477-f0abfddc7d49___27fff744076908e95c038561a5cb6669.jpg" 
+       style="max-width:250px; width:60%; height:auto; margin-bottom:30px;">
+  <br>
+  <button onclick="mostrarFormulario()">Acessar questionário</button>
+</div>
+
+<!-- FORMULÁRIO -->
+<div id="formulario" style="display:none;">
+  <div class="card">
+    <h2>Validação de Visita</h2>
+
+    <label>Vendedor</label>
+    <input id="vendedor">
+
+    <label>Código do Vendedor</label>
+    <input id="codigoVendedor">
+
+    <label>Loja</label>
+    <select id="loja">
+      <option value="">Selecione</option>
+      <option>Água Verde</option>
+      <option>Portão</option>
+      <option>Sprada</option>
+    </select>
+
+    <label>Tipo de Cliente</label>
+    <select id="tipoCliente">
+      <option value="">Selecione</option>
+      <option>Obra ativa</option>
+      <option>Pintor profissional</option>
+      <option>Cliente corporativo</option>
+      <option>Cliente loja</option>
+    </select>
+
+    <label>Status da Visita</label>
+    <select id="statusVisita">
+      <option value="">Selecione</option>
+      <option>Prospecção</option>
+      <option>Orçamento</option>
+      <option>Negociação</option>
+      <option>Fechado</option>
+      <option>Sem interesse</option>
+    </select>
+
+    <label>Observações</label>
+    <textarea id="observacoes" rows="3"></textarea>
+
+    <button onclick="capturarLocalizacao()">📍 Capturar Localização</button>
+    <p id="localizacao" class="info"></p>
+
+    <button onclick="abrirCamera()">📸 Tirar Foto</button>
+    <input type="file" id="camera" accept="image/*" capture="environment" hidden>
+    <img id="preview">
+
+    <button onclick="enviar()">✅ Confirmar Visita</button>
+    <p id="status" class="info"></p>
   </div>
-
-  <h2>Validação de Visita</h2>
-
-  <label>Vendedor</label>
-  <input id="vendedor">
-
-  <label>Código do Vendedor</label>
-  <input id="codigoVendedor">
-
-  <label>Loja</label>
-  <select id="loja">
-    <option value="">Selecione</option>
-    <option>Água Verde</option>
-    <option>Portão</option>
-    <option>Sprada</option>
-  </select>
-
-  <label>Tipo de Cliente</label>
-  <select id="tipoCliente">
-    <option value="">Selecione</option>
-    <option>Obra ativa</option>
-    <option>Pintor profissional</option>
-    <option>Cliente corporativo</option>
-    <option>Cliente loja</option>
-  </select>
-
-  <label>Status da Visita</label>
-  <select id="statusVisita">
-    <option value="">Selecione</option>
-    <option>Prospecção</option>
-    <option>Orçamento</option>
-    <option>Negociação</option>
-    <option>Fechado</option>
-    <option>Sem interesse</option>
-  </select>
-
-  <label>Observações</label>
-  <textarea id="observacoes" rows="3"></textarea>
-
-  <button onclick="capturarLocalizacao()">📍 Capturar Localização</button>
-  <p id="localizacao" class="info"></p>
-
-  <button onclick="abrirCamera()">📸 Tirar Foto</button>
-  <input type="file" id="camera" accept="image/*" capture="environment" hidden>
-  <img id="preview">
-
-  <button onclick="enviar()">✅ Confirmar Visita</button>
-  <p id="status" class="info"></p>
 </div>
 
 <script>
 let latitude, longitude, endereco = "";
 let fotoBase64 = null;
 
-const API_URL = "https://script.google.com/macros/s/AKfycbw3kM0KukrHTN_c0K0fQQXJAKFxBFVd4EmOyuopHBsmrac9agIgrBZvWxzUnIdo_xzG9w/exec";
+// URL DO SEU WEBAPP GOOGLE APPS SCRIPT
+const API_URL = "https://script.google.com/macros/s/AKfycbz18lWCMvQafjAQNVFL4hjrpIIRHMHxBkRAdE6xiYNNZb9BXUws5MQVl5xpt7gqJ2dZQQ/exec";
 
+// --- TRANSIÇÃO TELA INICIAL → FORMULÁRIO ---
+function mostrarFormulario() {
+  const intro = document.getElementById("intro");
+  const form = document.getElementById("formulario");
+  
+  intro.style.transition = "opacity 0.5s";
+  intro.style.opacity = 0;
+  
+  setTimeout(() => {
+    intro.style.display = "none";
+    form.style.display = "block";
+    form.style.opacity = 0;
+    form.style.transition = "opacity 0.5s";
+    setTimeout(() => form.style.opacity = 1, 50);
+  }, 500);
+}
+
+// --- LOCALIZAÇÃO ---
 function capturarLocalizacao() {
   navigator.geolocation.getCurrentPosition(async pos => {
     latitude = pos.coords.latitude;
     longitude = pos.coords.longitude;
 
-    // Tenta usar geocodificação reversa simples (OpenStreetMap)
     const geoUrl = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`;
     const res = await fetch(geoUrl);
     const data = await res.json();
@@ -151,6 +185,7 @@ function capturarLocalizacao() {
   }, () => alert("Erro ao obter localização"));
 }
 
+// --- CÂMERA ---
 function abrirCamera() {
   document.getElementById("camera").click();
 }
@@ -164,6 +199,7 @@ document.getElementById("camera").addEventListener("change", e => {
   reader.readAsDataURL(e.target.files[0]);
 });
 
+// --- ENVIO ---
 function enviar() {
   if (!latitude || !fotoBase64) {
     alert("Falta localização ou foto");
@@ -194,8 +230,8 @@ function enviar() {
     `;
 
     document.getElementById("fecharBtn").addEventListener("click", () => {
-      window.open("", "_self"); // necessário em alguns navegadores
-      window.close();           // tenta fechar a aba
+      window.open("", "_self");
+      window.close();
     });
   })
   .catch(() => {
@@ -203,6 +239,5 @@ function enviar() {
   });
 }
 </script>
-
 </body>
 </html>
