@@ -1,65 +1,148 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Validação de Visita</title>
+<title>Validação de Visita – Nichele Tintas</title>
 
-  <!-- 🔹 PWA -->
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#1a73e8">
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #6a1b9a, #9c27b0);
+    padding: 20px;
+    color: #333;
+  }
 
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      padding: 20px;
-    }
-    button {
-      width: 100%;
-      padding: 15px;
-      font-size: 16px;
-      margin-top: 10px;
-    }
-    img {
-      max-width: 100%;
-      margin-top: 10px;
-    }
-  </style>
+  .card {
+    background: #fff;
+    max-width: 500px;
+    margin: auto;
+    padding: 25px;
+    border-radius: 16px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.25);
+  }
+
+  h2 {
+    text-align: center;
+    color: #6a1b9a;
+  }
+
+  label {
+    font-weight: bold;
+    margin-top: 12px;
+    display: block;
+  }
+
+  input, select, textarea, button {
+    width: 100%;
+    padding: 12px;
+    margin-top: 6px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 15px;
+  }
+
+  textarea {
+    resize: vertical;
+  }
+
+  button {
+    background: #6a1b9a;
+    color: #fff;
+    border: none;
+    margin-top: 15px;
+    font-weight: bold;
+  }
+
+  button:hover {
+    background: #4a148c;
+  }
+
+  img {
+    max-width: 100%;
+    margin-top: 10px;
+    border-radius: 10px;
+  }
+
+  .info {
+    font-size: 14px;
+    margin-top: 6px;
+  }
+</style>
 </head>
 
 <body>
 
-<h2>Validação de Visita</h2>
+<div class="card">
+  <h2>Validação de Visita</h2>
 
-<button onclick="capturarLocalizacao()">📍 Capturar Localização</button>
-<p id="localizacao"></p>
+  <label>Vendedor</label>
+  <input id="vendedor">
 
-<button onclick="abrirCamera()">📸 Tirar Foto</button>
-<input type="file" id="camera" accept="image/*" capture="environment" hidden>
-<img id="preview">
+  <label>Código do Vendedor</label>
+  <input id="codigoVendedor">
 
-<button onclick="enviar()">✅ Confirmar Visita</button>
-<p id="status"></p>
+  <label>Loja</label>
+  <select id="loja">
+    <option value="">Selecione</option>
+    <option>Água Verde</option>
+    <option>Portão</option>
+    <option>Sprada</option>
+  </select>
+
+  <label>Tipo de Cliente</label>
+  <select id="tipoCliente">
+    <option value="">Selecione</option>
+    <option>Obra ativa</option>
+    <option>Pintor profissional</option>
+    <option>Cliente corporativo</option>
+    <option>Cliente loja</option>
+  </select>
+
+  <label>Status da Visita</label>
+  <select id="statusVisita">
+    <option value="">Selecione</option>
+    <option>Prospecção</option>
+    <option>Orçamento</option>
+    <option>Negociação</option>
+    <option>Fechado</option>
+    <option>Sem interesse</option>
+  </select>
+
+  <label>Observações</label>
+  <textarea id="observacoes" rows="3"></textarea>
+
+  <button onclick="capturarLocalizacao()">📍 Capturar Localização</button>
+  <p id="localizacao" class="info"></p>
+
+  <button onclick="abrirCamera()">📸 Tirar Foto</button>
+  <input type="file" id="camera" accept="image/*" capture="environment" hidden>
+  <img id="preview">
+
+  <button onclick="enviar()">✅ Confirmar Visita</button>
+  <p id="status" class="info"></p>
+</div>
 
 <script>
-let latitude = null;
-let longitude = null;
+let latitude, longitude, endereco = "";
 let fotoBase64 = null;
 
-// 🔴 URL DO WEBAPP (OK)
-const API_URL = "https://script.google.com/macros/s/AKfycbxiEIHlrt6tX2-o3N-oFvDn3aWtZ9ClGEUtInbsXJm6r6t-gRR2wrqj1TYOH8r4KhFJMg/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbz0-8QbxxNw6k1HNLfN8F4tS8c5NL4ctYdHACRpe0gioF7JbU55t5KDIKCa69t1P2Ct2w/exec";
 
 function capturarLocalizacao() {
-  navigator.geolocation.getCurrentPosition(
-    pos => {
-      latitude = pos.coords.latitude;
-      longitude = pos.coords.longitude;
-      document.getElementById("localizacao").innerText =
-        `Latitude: ${latitude} | Longitude: ${longitude}`;
-    },
-    () => alert("Erro ao obter localização")
-  );
+  navigator.geolocation.getCurrentPosition(async pos => {
+    latitude = pos.coords.latitude;
+    longitude = pos.coords.longitude;
+
+    const geoUrl = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`;
+
+    const res = await fetch(geoUrl);
+    const data = await res.json();
+    endereco = data.display_name || "Endereço não encontrado";
+
+    document.getElementById("localizacao").innerText = endereco;
+  }, () => alert("Erro ao obter localização"));
 }
 
 function abrirCamera() {
@@ -67,17 +150,16 @@ function abrirCamera() {
 }
 
 document.getElementById("camera").addEventListener("change", e => {
-  const file = e.target.files[0];
   const reader = new FileReader();
   reader.onload = () => {
     fotoBase64 = reader.result;
     document.getElementById("preview").src = fotoBase64;
   };
-  reader.readAsDataURL(file);
+  reader.readAsDataURL(e.target.files[0]);
 });
 
 function enviar() {
-  if (!latitude || !longitude || !fotoBase64) {
+  if (!latitude || !fotoBase64) {
     alert("Falta localização ou foto");
     return;
   }
@@ -85,22 +167,25 @@ function enviar() {
   fetch(API_URL, {
     method: "POST",
     body: JSON.stringify({
+      vendedor: vendedor.value,
+      codigoVendedor: codigoVendedor.value,
+      loja: loja.value,
+      tipoCliente: tipoCliente.value,
+      statusVisita: statusVisita.value,
+      observacoes: observacoes.value,
       lat: latitude,
       lng: longitude,
+      endereco: endereco,
       fotoBase64: fotoBase64
     })
   })
   .then(r => r.json())
   .then(res => {
-    document.getElementById("status").innerText =
-      res.codigo
-        ? "Visita confirmada! Código: " + res.codigo
-        : "Erro: " + res.erro;
+    status.innerText = res.codigo
+      ? "Visita confirmada! Código: " + res.codigo
+      : "Erro ao confirmar";
   })
-  .catch(() => {
-    document.getElementById("status").innerText =
-      "Erro ao enviar dados";
-  });
+  .catch(() => status.innerText = "Erro de envio");
 }
 </script>
 
