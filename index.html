@@ -3,13 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Validação de Visita – Nichele Tintas</title>
 
 <style>
   body {
     font-family: Arial, sans-serif;
-    background: linear-gradient(135deg, #6a1b9a, #9c27b0);
+    background: linear-gradient(135deg, #6a1b9a, #9c27b0, #ffca28);
     padding: 20px;
     color: #333;
   }
@@ -53,6 +52,7 @@
     border: none;
     margin-top: 15px;
     font-weight: bold;
+    cursor: pointer;
   }
 
   button:hover {
@@ -75,6 +75,12 @@
 <body>
 
 <div class="card">
+  <!-- Logo Nichele -->
+  <div style="text-align:center; margin-bottom:20px;">
+    <img src="https://tfbmsm.vtexassets.com/assets/vtex.file-manager-graphql/images/339595d6-1e8d-4ba1-a477-f0abfddc7d49___27fff744076908e95c038561a5cb6669.jpg"
+         style="max-width:180px; border-radius:12px;">
+  </div>
+
   <h2>Validação de Visita</h2>
 
   <label>Vendedor</label>
@@ -128,15 +134,15 @@
 let latitude, longitude, endereco = "";
 let fotoBase64 = null;
 
-const API_URL = "https://script.google.com/macros/s/AKfycbz0-8QbxxNw6k1HNLfN8F4tS8c5NL4ctYdHACRpe0gioF7JbU55t5KDIKCa69t1P2Ct2w/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbw3kM0KukrHTN_c0K0fQQXJAKFxBFVd4EmOyuopHBsmrac9agIgrBZvWxzUnIdo_xzG9w/exec";
 
 function capturarLocalizacao() {
   navigator.geolocation.getCurrentPosition(async pos => {
     latitude = pos.coords.latitude;
     longitude = pos.coords.longitude;
 
+    // Tenta usar geocodificação reversa simples (OpenStreetMap)
     const geoUrl = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`;
-
     const res = await fetch(geoUrl);
     const data = await res.json();
     endereco = data.display_name || "Endereço não encontrado";
@@ -181,11 +187,20 @@ function enviar() {
   })
   .then(r => r.json())
   .then(res => {
-    status.innerText = res.codigo
-      ? "Visita confirmada! Código: " + res.codigo
-      : "Erro ao confirmar";
+    const statusEl = document.getElementById("status");
+    statusEl.innerHTML = `
+      <strong>Visita confirmada!</strong><br><br>
+      <button id="fecharBtn">Fechar pesquisa</button>
+    `;
+
+    document.getElementById("fecharBtn").addEventListener("click", () => {
+      window.open("", "_self"); // necessário em alguns navegadores
+      window.close();           // tenta fechar a aba
+    });
   })
-  .catch(() => status.innerText = "Erro de envio");
+  .catch(() => {
+    document.getElementById("status").innerText = "Erro ao enviar dados";
+  });
 }
 </script>
 
