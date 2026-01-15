@@ -8,18 +8,20 @@
 <style>
   body {
     font-family: Arial, sans-serif;
-    background: linear-gradient(90deg, #6a1b9a, #9c27b0, #ffca28); /* esquerda → direita */
+    background: linear-gradient(180deg, #6a1b9a, #9c27b0, #ffca28); /* cima → baixo */
     padding: 20px;
     color: #333;
+    text-align: center;
   }
 
   .card {
     background: #fff;
     max-width: 500px;
     margin: auto;
-    padding: 35px 25px;
+    padding: 40px 30px;
     border-radius: 16px;
     box-shadow: 0 15px 40px rgba(0,0,0,0.25);
+    text-align: left;
   }
 
   h2 {
@@ -40,6 +42,7 @@
     border-radius: 8px;
     border: 1px solid #ccc;
     font-size: 15px;
+    box-sizing: border-box;
   }
 
   textarea {
@@ -54,6 +57,7 @@
     font-weight: bold;
     cursor: pointer;
     font-size: 16px;
+    transition: background 0.3s;
   }
 
   button:hover {
@@ -63,7 +67,8 @@
   img {
     max-width: 100%;
     height: auto;
-    border-radius: 10px;
+    display: block;
+    margin: auto;
   }
 
   .info {
@@ -71,14 +76,27 @@
     margin-top: 6px;
   }
 
-  /* Centraliza conteúdo dentro do card */
-  .card > * {
-    text-align: left;
-  }
-
   /* Tela inicial */
   #intro button {
-    max-width: 200px;
+    max-width: 250px;
+    font-size: 18px;
+    padding: 15px 25px;
+    margin-top: 20px;
+  }
+
+  /* Logo na tela de perguntas */
+  #formulario-logo {
+    max-width: 250px;
+    width: 60%;
+    height: auto;
+    margin: 0 auto 20px auto;
+  }
+
+  /* Centraliza os inputs dentro do card */
+  .card-content {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
   }
 </style>
 </head>
@@ -86,9 +104,9 @@
 <body>
 
 <!-- TELA INICIAL -->
-<div id="intro" style="text-align:center; margin-top:50px;">
+<div id="intro">
   <img src="https://tfbmsm.vtexassets.com/assets/vtex.file-manager-graphql/images/339595d6-1e8d-4ba1-a477-f0abfddc7d49___27fff744076908e95c038561a5cb6669.jpg" 
-       style="max-width:250px; width:60%; height:auto; margin-bottom:30px;">
+       style="max-width:300px; width:70%; height:auto; margin-bottom:30px;">
   <br>
   <button onclick="mostrarFormulario()">Acessar questionário</button>
 </div>
@@ -96,53 +114,57 @@
 <!-- FORMULÁRIO -->
 <div id="formulario" style="display:none;">
   <div class="card">
+    <!-- LOGO NA TELA DE PERGUNTAS -->
+    <img id="formulario-logo" src="https://tfbmsm.vtexassets.com/assets/vtex.file-manager-graphql/images/339595d6-1e8d-4ba1-a477-f0abfddc7d49___27fff744076908e95c038561a5cb6669.jpg">
+
     <h2>Validação de Visita</h2>
+    <div class="card-content">
+      <label>Vendedor</label>
+      <input id="vendedor">
 
-    <label>Vendedor</label>
-    <input id="vendedor">
+      <label>Código do Vendedor</label>
+      <input id="codigoVendedor">
 
-    <label>Código do Vendedor</label>
-    <input id="codigoVendedor">
+      <label>Loja</label>
+      <select id="loja">
+        <option value="">Selecione</option>
+        <option>Água Verde</option>
+        <option>Portão</option>
+        <option>Sprada</option>
+      </select>
 
-    <label>Loja</label>
-    <select id="loja">
-      <option value="">Selecione</option>
-      <option>Água Verde</option>
-      <option>Portão</option>
-      <option>Sprada</option>
-    </select>
+      <label>Tipo de Cliente</label>
+      <select id="tipoCliente">
+        <option value="">Selecione</option>
+        <option>Obra ativa</option>
+        <option>Pintor profissional</option>
+        <option>Cliente corporativo</option>
+        <option>Cliente loja</option>
+      </select>
 
-    <label>Tipo de Cliente</label>
-    <select id="tipoCliente">
-      <option value="">Selecione</option>
-      <option>Obra ativa</option>
-      <option>Pintor profissional</option>
-      <option>Cliente corporativo</option>
-      <option>Cliente loja</option>
-    </select>
+      <label>Status da Visita</label>
+      <select id="statusVisita">
+        <option value="">Selecione</option>
+        <option>Prospecção</option>
+        <option>Orçamento</option>
+        <option>Negociação</option>
+        <option>Fechado</option>
+        <option>Sem interesse</option>
+      </select>
 
-    <label>Status da Visita</label>
-    <select id="statusVisita">
-      <option value="">Selecione</option>
-      <option>Prospecção</option>
-      <option>Orçamento</option>
-      <option>Negociação</option>
-      <option>Fechado</option>
-      <option>Sem interesse</option>
-    </select>
+      <label>Observações</label>
+      <textarea id="observacoes" rows="3"></textarea>
 
-    <label>Observações</label>
-    <textarea id="observacoes" rows="3"></textarea>
+      <button onclick="capturarLocalizacao()">📍 Capturar Localização</button>
+      <p id="localizacao" class="info"></p>
 
-    <button onclick="capturarLocalizacao()">📍 Capturar Localização</button>
-    <p id="localizacao" class="info"></p>
+      <button onclick="abrirCamera()">📸 Tirar Foto</button>
+      <input type="file" id="camera" accept="image/*" capture="environment" hidden>
+      <img id="preview">
 
-    <button onclick="abrirCamera()">📸 Tirar Foto</button>
-    <input type="file" id="camera" accept="image/*" capture="environment" hidden>
-    <img id="preview">
-
-    <button onclick="enviar()">✅ Confirmar Visita</button>
-    <p id="status" class="info"></p>
+      <button onclick="enviar()">✅ Confirmar Visita</button>
+      <p id="status" class="info"></p>
+    </div>
   </div>
 </div>
 
@@ -151,16 +173,16 @@ let latitude, longitude, endereco = "";
 let fotoBase64 = null;
 
 // URL DO SEU WEBAPP GOOGLE APPS SCRIPT
-const API_URL = "https://script.google.com/macros/s/AKfycbz18lWCMvQafjAQNVFL4hjrpIIRHMHxBkRAdE6xiYNNZb9BXUws5MQVl5xpt7gqJ2dZQQ/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbw3kM0KukrHTN_c0K0fQQXJAKFxBFVd4EmOyuopHBsmrac9agIgrBZvWxzUnIdo_xzG9w/exec";
 
 // --- TRANSIÇÃO TELA INICIAL → FORMULÁRIO ---
 function mostrarFormulario() {
   const intro = document.getElementById("intro");
   const form = document.getElementById("formulario");
-  
+
   intro.style.transition = "opacity 0.5s";
   intro.style.opacity = 0;
-  
+
   setTimeout(() => {
     intro.style.display = "none";
     form.style.display = "block";
@@ -239,5 +261,6 @@ function enviar() {
   });
 }
 </script>
+
 </body>
 </html>
