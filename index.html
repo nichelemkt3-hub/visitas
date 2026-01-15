@@ -6,39 +6,110 @@
 <title>Validação de Visita – Nichele Tintas</title>
 
 <style>
-  body {
+  html, body {
+    margin: 0;
+    padding: 0;
     font-family: Arial, sans-serif;
-    background: linear-gradient(180deg, #6a1b9a, #9c27b0, #ffca28); /* cima → baixo */
-    padding: 20px;
+    height: 100%;
+    background: linear-gradient(180deg, #6a1b9a, #9c27b0, #ffca28); /* degradê único de cima para baixo */
     color: #333;
+  }
+
+  body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     text-align: center;
+  }
+
+  /* TELA INICIAL */
+  #intro {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: inherit;
+  }
+
+  #intro img {
+    width: 60%;
+    max-width: 400px;
+    height: auto;
+    margin-bottom: 30px;
+  }
+
+  #intro button {
+    font-size: 20px;
+    padding: 18px 30px;
+    cursor: pointer;
+    background: #6a1b9a;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    transition: background 0.3s;
+  }
+
+  #intro button:hover {
+    background: #4a148c;
+  }
+
+  /* FORMULÁRIO */
+  #formulario {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    min-height: 100vh;
+    background: inherit;
+    padding-top: 20px;
+    box-sizing: border-box;
+  }
+
+  #formulario-logo {
+    width: 80%;
+    max-width: 500px;
+    height: auto;
+    margin: 20px auto;
+    display: block;
   }
 
   .card {
     background: #fff;
     max-width: 500px;
-    margin: auto;
+    width: 90%;
     padding: 40px 30px;
     border-radius: 16px;
     box-shadow: 0 15px 40px rgba(0,0,0,0.25);
     text-align: left;
+    margin-bottom: 40px;
   }
 
   h2 {
     text-align: center;
     color: #6a1b9a;
+    margin-bottom: 20px;
+  }
+
+  .card-content {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
   }
 
   label {
     font-weight: bold;
     margin-top: 12px;
-    display: block;
   }
 
   input, select, textarea, button {
     width: 100%;
     padding: 12px;
-    margin-top: 10px;
     border-radius: 8px;
     border: 1px solid #ccc;
     font-size: 15px;
@@ -64,59 +135,31 @@
     background: #4a148c;
   }
 
-  img {
-    max-width: 100%;
-    height: auto;
-    display: block;
-    margin: auto;
-  }
-
-  .info {
+  #status {
     font-size: 14px;
     margin-top: 6px;
   }
 
-  /* Tela inicial */
-  #intro button {
-    max-width: 250px;
-    font-size: 18px;
-    padding: 15px 25px;
-    margin-top: 20px;
-  }
-
-  /* Logo na tela de perguntas */
-  #formulario-logo {
-    max-width: 250px;
-    width: 60%;
-    height: auto;
-    margin: 0 auto 20px auto;
-  }
-
-  /* Centraliza os inputs dentro do card */
-  .card-content {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+  img#preview {
+    max-width: 100%;
+    margin-top: 10px;
   }
 </style>
 </head>
-
 <body>
 
 <!-- TELA INICIAL -->
 <div id="intro">
-  <img src="https://tfbmsm.vtexassets.com/assets/vtex.file-manager-graphql/images/339595d6-1e8d-4ba1-a477-f0abfddc7d49___27fff744076908e95c038561a5cb6669.jpg" 
-       style="max-width:300px; width:70%; height:auto; margin-bottom:30px;">
-  <br>
+  <img src="https://tfbmsm.vtexassets.com/assets/vtex.file-manager-graphql/images/339595d6-1e8d-4ba1-a477-f0abfddc7d49___27fff744076908e95c038561a5cb6669.jpg">
   <button onclick="mostrarFormulario()">Acessar questionário</button>
 </div>
 
 <!-- FORMULÁRIO -->
-<div id="formulario" style="display:none;">
-  <div class="card">
-    <!-- LOGO NA TELA DE PERGUNTAS -->
-    <img id="formulario-logo" src="https://tfbmsm.vtexassets.com/assets/vtex.file-manager-graphql/images/339595d6-1e8d-4ba1-a477-f0abfddc7d49___27fff744076908e95c038561a5cb6669.jpg">
+<div id="formulario">
+  <!-- LOGO NO TOPO -->
+  <img id="formulario-logo" src="https://tfbmsm.vtexassets.com/assets/vtex.file-manager-graphql/images/339595d6-1e8d-4ba1-a477-f0abfddc7d49___27fff744076908e95c038561a5cb6669.jpg">
 
+  <div class="card">
     <h2>Validação de Visita</h2>
     <div class="card-content">
       <label>Vendedor</label>
@@ -156,14 +199,14 @@
       <textarea id="observacoes" rows="3"></textarea>
 
       <button onclick="capturarLocalizacao()">📍 Capturar Localização</button>
-      <p id="localizacao" class="info"></p>
+      <p id="localizacao"></p>
 
       <button onclick="abrirCamera()">📸 Tirar Foto</button>
       <input type="file" id="camera" accept="image/*" capture="environment" hidden>
       <img id="preview">
 
       <button onclick="enviar()">✅ Confirmar Visita</button>
-      <p id="status" class="info"></p>
+      <p id="status"></p>
     </div>
   </div>
 </div>
@@ -180,16 +223,16 @@ function mostrarFormulario() {
   const intro = document.getElementById("intro");
   const form = document.getElementById("formulario");
 
-  intro.style.transition = "opacity 0.5s";
+  intro.style.transition = "opacity 1s"; // tempo dobrado
   intro.style.opacity = 0;
 
   setTimeout(() => {
     intro.style.display = "none";
-    form.style.display = "block";
+    form.style.display = "flex";
     form.style.opacity = 0;
-    form.style.transition = "opacity 0.5s";
+    form.style.transition = "opacity 1s";
     setTimeout(() => form.style.opacity = 1, 50);
-  }, 500);
+  }, 1000);
 }
 
 // --- LOCALIZAÇÃO ---
@@ -250,7 +293,6 @@ function enviar() {
       <strong>Visita confirmada!</strong><br><br>
       <button id="fecharBtn">Fechar pesquisa</button>
     `;
-
     document.getElementById("fecharBtn").addEventListener("click", () => {
       window.open("", "_self");
       window.close();
