@@ -11,7 +11,7 @@
     padding: 0;
     font-family: Arial, sans-serif;
     height: 100%;
-    background: linear-gradient(180deg, #6a1b9a, #9c27b0, #ffca28); /* degradê único de cima para baixo */
+    background: linear-gradient(180deg, #6a1b9a, #9c27b0, #ffca28); /* degradê de cima para baixo */
     color: #333;
   }
 
@@ -23,7 +23,7 @@
     text-align: center;
   }
 
-  /* TELA INICIAL */
+  /* --- TELA INICIAL --- */
   #intro {
     position: absolute;
     top: 0;
@@ -38,15 +38,15 @@
   }
 
   #intro img {
-    width: 60%;
-    max-width: 400px;
+    width: 80%;
+    max-width: 400px; /* logo grande, mas proporcional */
     height: auto;
     margin-bottom: 30px;
   }
 
   #intro button {
-    font-size: 20px;
-    padding: 18px 30px;
+    font-size: 18px; /* tamanho menor e proporcional */
+    padding: 15px 25px;
     cursor: pointer;
     background: #6a1b9a;
     color: #fff;
@@ -59,7 +59,7 @@
     background: #4a148c;
   }
 
-  /* FORMULÁRIO */
+  /* --- FORMULÁRIO --- */
   #formulario {
     display: none;
     flex-direction: column;
@@ -72,7 +72,7 @@
   }
 
   #formulario-logo {
-    width: 80%;
+    width: 90%;
     max-width: 500px;
     height: auto;
     margin: 20px auto;
@@ -82,7 +82,7 @@
   .card {
     background: #fff;
     max-width: 500px;
-    width: 90%;
+    width: 90%; /* margens laterais mantidas */
     padding: 40px 30px;
     border-radius: 16px;
     box-shadow: 0 15px 40px rgba(0,0,0,0.25);
@@ -144,20 +144,22 @@
     max-width: 100%;
     margin-top: 10px;
   }
+
 </style>
 </head>
 <body>
 
 <!-- TELA INICIAL -->
 <div id="intro">
-  <img src="https://tfbmsm.vtexassets.com/assets/vtex.file-manager-graphql/images/339595d6-1e8d-4ba1-a477-f0abfddc7d49___27fff744076908e95c038561a5cb6669.jpg">
+  <!-- Substitua esta URL pela sua nova logo do Canva -->
+  <img src="https://tfbmsm.vtexassets.com/assets/vtex.file-manager-graphql/images/339595d6-1e8d-4ba1-a477-f0abfddc7d49___27fff744076908e95c038561a5cb6669.jpg" alt="Logo Nichele Tintas">
   <button onclick="mostrarFormulario()">Acessar questionário</button>
 </div>
 
 <!-- FORMULÁRIO -->
 <div id="formulario">
-  <!-- LOGO NO TOPO -->
-  <img id="formulario-logo" src="https://tfbmsm.vtexassets.com/assets/vtex.file-manager-graphql/images/339595d6-1e8d-4ba1-a477-f0abfddc7d49___27fff744076908e95c038561a5cb6669.jpg">
+  <!-- Logo no topo do formulário -->
+  <img id="formulario-logo" src="https://tfbmsm.vtexassets.com/assets/vtex.file-manager-graphql/images/339595d6-1e8d-4ba1-a477-f0abfddc7d49___27fff744076908e95c038561a5cb6669.jpg" alt="Logo Nichele Tintas">
 
   <div class="card">
     <h2>Validação de Visita</h2>
@@ -215,7 +217,7 @@
 let latitude, longitude, endereco = "";
 let fotoBase64 = null;
 
-// URL DO SEU WEBAPP GOOGLE APPS SCRIPT
+// Substitua aqui pela URL do seu WebApp Google Apps Script
 const API_URL = "https://script.google.com/macros/s/AKfycbw3kM0KukrHTN_c0K0fQQXJAKFxBFVd4EmOyuopHBsmrac9agIgrBZvWxzUnIdo_xzG9w/exec";
 
 // --- TRANSIÇÃO TELA INICIAL → FORMULÁRIO ---
