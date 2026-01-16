@@ -32,26 +32,25 @@
   #intro button {
     font-size: 18px;
     padding: 14px 28px;
-    cursor: pointer;
     background: #6a1b9a;
     color: #fff;
     border: none;
     border-radius: 10px;
     max-width: 260px;
+    cursor: pointer;
   }
 
   /* --- FORMULÁRIO --- */
   #formulario {
     display: none;
-    padding: 40px 16px 60px;
+    padding: 40px 20px 60px; /* 👈 PADDING REAL DOS DOIS LADOS */
     box-sizing: border-box;
   }
 
   .card {
     background: #fff;
-    max-width: 380px; /* MAIS ESTREITO */
-    width: 100%;
-    margin: 0 auto; /* centraliza */
+    max-width: 380px;
+    margin: 0 auto; /* centraliza corretamente */
     padding: 32px 24px;
     border-radius: 18px;
     box-shadow: 0 15px 40px rgba(0,0,0,0.25);
@@ -178,8 +177,8 @@ let fotoBase64 = null;
 const API_URL = "https://script.google.com/macros/s/AKfycbw3kM0KukrHTN_c0K0fQQXJAKFxBFVd4EmOyuopHBsmrac9agIgrBZvWxzUnIdo_xzG9w/exec";
 
 function mostrarFormulario() {
-  document.getElementById("intro").style.display = "none";
-  document.getElementById("formulario").style.display = "block";
+  intro.style.display = "none";
+  formulario.style.display = "block";
 }
 
 function capturarLocalizacao() {
@@ -191,12 +190,12 @@ function capturarLocalizacao() {
     const data = await res.json();
     endereco = data.display_name || "";
 
-    document.getElementById("localizacao").innerText = endereco;
+    localizacao.innerText = endereco;
   });
 }
 
 function abrirCamera() {
-  document.getElementById("camera").click();
+  camera.click();
 }
 
 camera.addEventListener("change", e => {
