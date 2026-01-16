@@ -5,6 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Validação de Visita – Nichele Tintas</title>
 
+<!-- Manifest PWA -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1a73e8">
+
 <style>
 html, body {
   margin: 0;
@@ -46,39 +50,33 @@ html, body {
 
 /* ================= SEGUNDA TELA ================= */
 #formulario {
-  position: relative;
   opacity: 0;
   pointer-events: none;
   min-height: 100vh;
   width: 100%;
+
+  /* 🔹 FUNDO COM DUAS IMAGENS CONTÍNUAS */
+  background-image: 
+    url("topo.png"),
+    url("baixo.png");
+  background-repeat: 
+    no-repeat,
+    no-repeat;
+  background-position: 
+    top,
+    bottom;
+  background-size: 
+    100% auto,
+    100% auto;
+
   display: flex;
   justify-content: center;
   align-items: flex-start;
+
   padding-top: 90px;
-  padding-bottom: 90px;
-  transition: opacity 2.2s ease;
-}
+  padding-bottom: 60px;
 
-/* 🔹 FUNDO COM DUAS IMAGENS CONTÍNUAS SEM GAP */
-#fundo-topo, #fundo-baixo {
-  position: absolute;
-  left: 0;
-  width: 100%;
-  z-index: 0;
-}
-
-#fundo-topo {
-  top: 0;
-  height: 50%;
-  background: url('topo.png') no-repeat top center;
-  background-size: cover;
-}
-
-#fundo-baixo {
-  top: 50%;
-  height: 50%;
-  background: url('baixo.png') no-repeat bottom center;
-  background-size: cover;
+  transition: opacity 1.8s ease;
 }
 
 #formulario.ativo {
@@ -94,10 +92,10 @@ html, body {
   padding: 38px 26px 40px;
   border-radius: 22px;
   box-shadow: 0 18px 45px rgba(0,0,0,0.28);
+
   transform: translateY(140px);
   opacity: 0;
-  transition: transform 1.8s ease, opacity 1.8s ease;
-  z-index: 1;
+  transition: transform 1.2s ease, opacity 1.2s ease;
 }
 
 .card h2 {
@@ -167,10 +165,6 @@ button {
 
 <!-- SEGUNDA TELA -->
 <div id="formulario">
-  <!-- 🔹 Imagens de fundo contínuas -->
-  <div id="fundo-topo"></div>
-  <div id="fundo-baixo"></div>
-
   <div class="card" id="card">
     <h2>Visitas Externas</h2>
 
@@ -226,7 +220,6 @@ button {
 
 <script>
 let latitude, longitude, endereco = "", fotoBase64 = null;
-
 const API_URL = "https://script.google.com/macros/s/AKfycbw3kM0KukrHTN_c0K0fQQXJAKFxBFVd4EmOyuopHBsmrac9agIgrBZvWxzUnIdo_xzG9w/exec";
 
 /* progresso */
