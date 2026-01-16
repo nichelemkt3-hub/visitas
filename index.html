@@ -3,169 +3,153 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Validação de Visita – Nichele Tintas</title>
+<title>Validação de Visitas – Nichele Tintas</title>
+
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1a73e8">
 
 <style>
-html, body {
-  margin: 0;
-  padding: 0;
-  font-family: Arial, sans-serif;
-  height: 100%;
-  overflow-x: hidden;
-}
+  html, body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    min-height: 100%;
+    background: #ffffff;
+  }
 
-/* ================= PRIMEIRA TELA ================= */
-#intro {
-  position: fixed;
-  inset: 0;
-  background-image: url("capa.png");
-  background-size: cover;
-  background-position: center;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 10;
-  transition: opacity 2.2s ease, filter 2.2s ease;
-}
+  /* --- PRIMEIRA TELA --- */
+  #intro {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: url("capa.png") no-repeat center top;
+    background-size: cover;
+    transition: opacity 1.5s ease, filter 1.5s ease;
+  }
 
-#intro.fade-out {
-  opacity: 0;
-  filter: blur(18px);
-  pointer-events: none;
-}
+  #intro.fade-out {
+    opacity: 0;
+    filter: blur(12px);
+    pointer-events: none;
+  }
 
-#intro button {
-  font-size: 16px;
-  padding: 12px 26px;
-  max-width: 220px;
-  background: #6a1b9a;
-  color: #fff;
-  border: none;
-  border-radius: 14px;
-  cursor: pointer;
-}
+  #intro button {
+    font-size: 20px;
+    padding: 14px 28px;
+    background: linear-gradient(120deg,#6a1b9a,#9c27b0,#ffca28);
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+  }
 
-/* ================= SEGUNDA TELA ================= */
-#formulario {
-  opacity: 0;
-  pointer-events: none;
-  min-height: 100vh;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  padding-top: 90px;
-  padding-bottom: 60px;
-  transition: opacity 2.2s ease;
+  /* --- SEGUNDA TELA --- */
+  #formulario {
+    display: none;
+    min-height: 100vh;
+    background-color: #ffffff;
+    background-image: url("topo.png"), url("baixo.png");
+    background-repeat: no-repeat, no-repeat;
+    background-position: top center, bottom center;
+    background-size: cover, cover;
+    padding: 40px 16px 80px;
+    box-sizing: border-box;
+  }
 
-  /* 🔹 FUNDO COM topo + baixo */
-  background-image:
-    url("topo.png"),
-    url("baixo.png");
-  background-repeat:
-    no-repeat,
-    repeat-y;
-  background-position:
-    center top,
-    center top;
-  background-size:
-    105% auto,
-    105% auto;
-}
+  #formulario.ativo {
+    animation: slideUp 1.5s ease forwards;
+  }
 
-#formulario.ativo {
-  opacity: 1;
-  pointer-events: auto;
-}
+  @keyframes slideUp {
+    from { opacity:0; transform: translateY(100px); }
+    to { opacity:1; transform: translateY(0); }
+  }
 
-/* ================= CARD ================= */
-.card {
-  background: #fff;
-  width: 78%;
-  max-width: 300px;
-  padding: 38px 26px 40px;
-  border-radius: 22px;
-  box-shadow: 0 18px 45px rgba(0,0,0,0.28);
-  transform: translateY(140px);
-  opacity: 0;
-  transition: transform 1.8s ease, opacity 1.8s ease;
-}
+  .card {
+    max-width: 380px;
+    margin: 0 auto;
+    padding: 28px 24px 32px;
+    border-radius: 20px;
+    box-shadow: 0 18px 45px rgba(0,0,0,0.25);
+    background: rgba(255,255,255,0.95);
+    text-align: left;
+  }
 
-.card h2 {
-  text-align: center;
-  color: #6a1b9a;
-  margin-bottom: 18px;
-}
+  .card h2 {
+    text-align: center;
+    margin-bottom: 12px;
+    color: #6a1b9a;
+  }
 
-/* ================= FORM ================= */
-label {
-  font-weight: bold;
-  display: block;
-  margin-top: 14px;
-}
+  .card .titulo-visitas {
+    text-align: center;
+    font-weight: bold;
+    margin-bottom: 16px;
+    font-size: 18px;
+    color: #333;
+  }
 
-input, select, textarea, button {
-  width: 100%;
-  padding: 12px;
-  margin-top: 6px;
-  border-radius: 10px;
-  border: 1px solid #ccc;
-  font-size: 15px;
-  box-sizing: border-box;
-}
+  .progress {
+    height: 4px;
+    background: #e0e0e0;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 16px;
+  }
 
-textarea { resize: vertical; }
+  .progress span {
+    display: block;
+    height: 100%;
+    width: 0%;
+    background: #2e7d32;
+    transition: width 0.4s ease;
+  }
 
-button {
-  background: #6a1b9a;
-  color: #fff;
-  border: none;
-  margin-top: 16px;
-  font-weight: bold;
-  cursor: pointer;
-}
+  label { font-weight: bold; margin-top: 14px; display:block; }
+  input, select, textarea, button {
+    width: 100%;
+    padding: 12px;
+    margin-top: 6px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    font-size: 15px;
+    box-sizing: border-box;
+  }
 
-/* ================= PROGRESSO ================= */
-.progress {
-  height: 4px;
-  background: #e0e0e0;
-  border-radius: 4px;
-  overflow: hidden;
-  margin-bottom: 18px;
-}
+  textarea { resize: vertical; }
 
-.progress span {
-  display: block;
-  height: 100%;
-  width: 0%;
-  background: #2e7d32;
-  transition: width 0.4s ease;
-}
+  button {
+    background: #6a1b9a;
+    color: #fff;
+    border: none;
+    margin-top: 16px;
+    font-weight: bold;
+    cursor: pointer;
+  }
 
-.status-ok {
-  font-size: 14px;
-  color: #2e7d32;
-  margin-top: 6px;
-  display: none;
-}
+  button.sucesso { background: #2e7d32; }
+  button:disabled { opacity: 0.7; }
+
+  #localizacao, #statusFoto, #statusVisita { margin-top: 8px; font-size: 14px; color:#333; }
+
+  img#preview { max-width: 100%; margin-top: 10px; border-radius: 12px; }
+
 </style>
 </head>
-
 <body>
 
-<!-- PRIMEIRA TELA -->
+<!-- TELA INICIAL -->
 <div id="intro">
   <button onclick="mostrarFormulario()">Acessar Questionário</button>
 </div>
 
-<!-- SEGUNDA TELA -->
+<!-- FORMULÁRIO -->
 <div id="formulario">
   <div class="card" id="card">
-    <h2>Visitas Externas</h2>
-
-    <div class="progress">
-      <span id="progressBar"></span>
-    </div>
+    <div class="titulo-visitas">Visitas Externas</div>
+    <div class="progress"><span id="progressBar"></span></div>
 
     <label>Vendedor</label>
     <input id="vendedor">
@@ -201,69 +185,79 @@ button {
     </select>
 
     <label>Observações</label>
-    <textarea id="observacoes" rows="3"></textarea>
+    <textarea id="observacoes"></textarea>
 
     <button id="btnLoc" onclick="capturarLocalizacao()">📍 Capturar Localização</button>
+    <p id="localizacao"></p>
 
     <button onclick="abrirCamera()">📸 Tirar Foto</button>
     <input type="file" id="camera" hidden accept="image/*" capture="environment">
-    <p id="statusFoto" class="status-ok">✅ Imagem salva</p>
+    <p id="statusFoto"></p>
+    <img id="preview">
 
     <button id="btnEnviar" onclick="enviar()">✅ Confirmar Visita</button>
-    <p id="statusEnvio" class="status-ok">✅ Visita confirmada</p>
+    <p id="statusVisita"></p>
   </div>
 </div>
 
 <script>
 let latitude, longitude, endereco = "", fotoBase64 = null;
-
 const API_URL = "https://script.google.com/macros/s/AKfycbw3kM0KukrHTN_c0K0fQQXJAKFxBFVd4EmOyuopHBsmrac9agIgrBZvWxzUnIdo_xzG9w/exec";
 
-/* progresso */
-const campos = ["vendedor","codigoVendedor","loja","tipoCliente","statusVisita","observacoes"];
-campos.forEach(id =>
-  document.getElementById(id).addEventListener("input", atualizarProgresso)
-);
+// Progress
+const campos = ["vendedor","codigoVendedor","loja","tipoCliente","statusVisita"];
+campos.forEach(id => document.getElementById(id).addEventListener("input", atualizarProgresso));
 
 function atualizarProgresso() {
   const preenchidos = campos.filter(id => document.getElementById(id).value).length;
-  progressBar.style.width = (preenchidos / campos.length) * 100 + "%";
+  document.getElementById("progressBar").style.width = (preenchidos / campos.length) * 100 + "%";
 }
 
-/* transição */
+// Transição primeira tela → formulário
 function mostrarFormulario() {
   intro.classList.add("fade-out");
-  formulario.classList.add("ativo");
-
   setTimeout(() => {
-    card.style.transform = "translateY(0)";
-    card.style.opacity = "1";
-  }, 120);
+    intro.style.display = "none";
+    formulario.style.display = "block";
+    setTimeout(() => formulario.classList.add("ativo"), 50);
+  }, 1500);
 }
 
-/* localização */
+// Localização
 function capturarLocalizacao() {
-  navigator.geolocation.getCurrentPosition(pos => {
+  navigator.geolocation.getCurrentPosition(async pos => {
     latitude = pos.coords.latitude;
     longitude = pos.coords.longitude;
-
+    const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`);
+    const data = await res.json();
+    endereco = data.display_name || "";
     btnLoc.textContent = "Localização capturada ✅";
-    btnLoc.style.background = "#2e7d32";
-  });
+    btnLoc.classList.add("sucesso");
+    localizacao.innerText = endereco;
+    atualizarProgresso();
+  }, ()=> alert("Erro ao capturar localização"));
 }
 
-/* câmera */
+// Câmera
 camera.addEventListener("change", e => {
-  const r = new FileReader();
-  r.onload = () => {
-    fotoBase64 = r.result;
-    document.getElementById("statusFoto").style.display = "block";
+  const reader = new FileReader();
+  reader.onload = () => {
+    fotoBase64 = reader.result;
+    preview.src = fotoBase64;
+    statusFoto.textContent = "Imagem salva ✅";
   };
-  r.readAsDataURL(e.target.files[0]);
+  reader.readAsDataURL(e.target.files[0]);
 });
 
-/* envio */
+function abrirCamera() { camera.click(); }
+
+// Enviar
 function enviar() {
+  if (!latitude || !fotoBase64) { alert("Falta localização ou foto"); return; }
+
+  btnEnviar.textContent = "Enviando...";
+  btnEnviar.disabled = true;
+
   fetch(API_URL, {
     method: "POST",
     body: JSON.stringify({
@@ -279,13 +273,25 @@ function enviar() {
       fotoBase64: fotoBase64
     })
   })
-  .then(() => {
-    document.getElementById("statusEnvio").style.display = "block";
+  .then(r=>r.json())
+  .then(()=>{
+    statusVisita.textContent = "✅ Visita confirmada";
+    btnEnviar.textContent = "Confirmar Visita";
+    btnEnviar.disabled = false;
+  })
+  .catch(()=>{
+    btnEnviar.textContent = "Erro ao enviar";
+    btnEnviar.disabled = false;
   });
 }
 
-function abrirCamera() {
-  camera.click();
+// Service Worker
+if("serviceWorker" in navigator){
+  window.addEventListener("load", ()=> {
+    navigator.serviceWorker.register("service-worker.js")
+      .then(reg=>console.log("SW registrado", reg))
+      .catch(err=>console.log("SW falhou", err));
+  });
 }
 </script>
 
