@@ -158,6 +158,18 @@ button {
 </style>
 </head>
 
+ <!-- Manifest PWA -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1a73e8">
+
+<!-- Service Worker -->
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js');
+  }
+</script>
+ 
+
 <body>
 
 <!-- PRIMEIRA TELA -->
