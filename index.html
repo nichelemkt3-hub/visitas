@@ -22,13 +22,22 @@ html, body {
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  transition: opacity 1.2s ease, filter 1.2s ease;
+  transition: opacity 1.5s ease, filter 1.5s ease;
+  background: linear-gradient(180deg, #6a1b9a, #9c27b0, #ffca28);
+  background-size: 200% 200%;
+  animation: bgMove 15s ease infinite;
+}
+@keyframes bgMove {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 #intro.fade-out {
   opacity: 0;
   filter: blur(12px);
   pointer-events: none;
 }
+
 #intro button {
   font-size: 16px;
   padding: 12px 28px;
@@ -53,33 +62,35 @@ html, body {
 
   /* IMAGEM DE FUNDO */
   background-image: url("fundonicheletintas.png");
-  background-size: cover;       /* cobre toda a tela */
-  background-position: top center;  /* topo visível */
+  background-size: cover;       
+  background-position: top center;  
   background-repeat: no-repeat;
 
   display: flex;
   justify-content: center;
-  align-items: flex-start; /* card vai descendo do topo */
+  align-items: flex-start; 
   padding-top: 160px; /* espaço do topo para logo */
   box-sizing: border-box;
+  transition: opacity 1.5s ease, filter 1.5s ease;
 }
 
 /* --- CARD --- */
 .card {
   background: #fff;
-  max-width: 360px;       /* deixa espaço lateral para o fundo */
+  max-width: 320px;       /* reduzimos lateral para mostrar o fundo */
   width: 90%;
   padding: 60px 20px 40px;
   border-radius: 20px;
   box-shadow: 0 18px 45px rgba(0,0,0,0.25);
   text-align: left;
+  margin: 0 auto;
 }
 
-/* TÍTULO DO CARD */
+/* TÍTULO CARD */
 .card h2 {
   text-align: center;
   color: #6a1b9a;
-  margin-bottom: 16px;
+  margin-bottom: 20px;
   font-size: 22px;
 }
 
@@ -211,12 +222,13 @@ function atualizarProgresso() {
   document.getElementById("progressBar").style.width = porcentagem + "%";
 }
 
+// Transição tela inicial → formulário
 function mostrarFormulario() {
   intro.classList.add("fade-out");
   setTimeout(() => {
     intro.style.display = "none";
     formulario.style.display = "flex";
-  }, 1200);
+  }, 1500);
 }
 
 function capturarLocalizacao() {
