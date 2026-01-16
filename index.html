@@ -3,162 +3,160 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Validação de Visita – Nichele Tintas</title>
+<title>Validação de Visitas</title>
 
 <style>
-/* --- GERAL --- */
-html, body {
-  margin: 0;
-  padding: 0;
-  font-family: Arial, sans-serif;
-  min-height: 100%;
-  background: #f2f2f2;
-}
+  html, body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    height: 100%;
+    overflow-x: hidden;
+  }
 
-/* --- PRIMEIRA TELA --- */
-#intro {
-  position: fixed;
-  inset: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: url('capa.png') no-repeat center center;
-  background-size: cover;
-  transition: opacity 1.2s ease, filter 1.2s ease;
-}
+  /* --- PRIMEIRA TELA --- */
+  #intro {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(120deg, #6a1b9a, #9c27b0, #ffca28);
+    z-index: 3;
+  }
 
-#intro.fade-out {
-  opacity: 0;
-  filter: blur(14px);
-  pointer-events: none;
-}
+  #intro button {
+    font-size: 18px;
+    padding: 14px 28px;
+    background: #6a1b9a;
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    max-width: 250px;
+    width: 80%;
+    cursor: pointer;
+  }
 
-#intro button {
-  font-size: 18px;
-  padding: 14px 28px;
-  background: #6a1b9a;
-  color: #fff;
-  border: none;
-  border-radius: 12px;
-  max-width: 250px;
-  width: 80%;
-  text-align: center;
-  z-index: 1;
-}
+  #intro.fade-out {
+    opacity: 0;
+    transition: opacity 1.2s ease;
+    pointer-events: none;
+  }
 
-/* --- SEGUNDA TELA --- */
-#formulario {
-  display: none;
-  position: relative;
-  width: 100%;
-  height: 100vh;
-  overflow-y: auto;
-}
+  /* --- SEGUNDA TELA --- */
+  #formulario {
+    display: none;
+    position: relative;
+    width: 100%;
+    min-height: 100vh;
+  }
 
-/* Fundo topo e baixo */
-#fundo-topo {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 50%;
-  background: url('topo.png') no-repeat center top;
-  background-size: cover;
-  z-index: 0;
-}
+  /* Fundo topo e baixo contínuo */
+  #fundo-topo {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 50%;
+    background: url('topo.png') no-repeat top center;
+    background-size: cover;
+    z-index: 0;
+  }
 
-#fundo-baixo {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 50%;
-  background: url('baixo.png') no-repeat center bottom;
-  background-size: cover;
-  z-index: 0;
-}
+  #fundo-baixo {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: 50%;
+    background: url('baixo.png') no-repeat bottom center;
+    background-size: cover;
+    z-index: 0;
+  }
 
-/* Container do card (formulário) */
-.card-container {
-  position: absolute;
-  top: 80px;    /* espaço topo */
-  bottom: 80px; /* espaço inferior igual ao topo */
-  left: 0;
-  right: 0;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start; 
-  z-index: 2;
-  padding: 0 16px; /* espaço lateral */
-}
+  /* Container do card */
+  .card-container {
+    position: absolute;
+    top: 80px;
+    bottom: 80px;
+    left: 16px;   /* espaço lateral */
+    right: 16px;  /* espaço lateral */
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    z-index: 2;
+  }
 
-/* Card do formulário */
-.card {
-  background: #fff;
-  max-width: 380px;
-  width: 100%; /* ocupa até max-width, mas respeita padding do container */
-  padding: 28px 24px 32px;
-  border-radius: 20px;
-  box-shadow: 0 18px 45px rgba(0,0,0,0.25);
-  text-align: left;
-  opacity: 0;
-  transform: translateY(40px);
-  transition: all 1.0s ease;
-}
+  .card {
+    background: #fff;
+    max-width: 380px;
+    width: 100%;
+    padding: 28px 24px 32px;
+    border-radius: 20px;
+    box-shadow: 0 18px 45px rgba(0,0,0,0.25);
+    text-align: left;
+    opacity: 0;
+    transform: translateY(40px);
+    transition: all 1.0s ease; /* transição rápida */
+  }
 
-.card h2 {
-  text-align: center;
-  color: #6a1b9a;
-  margin-bottom: 10px;
-}
+  .progress {
+    height: 4px;
+    background: #e0e0e0;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 16px;
+  }
 
-.progress {
-  height: 4px;
-  background: #e0e0e0;
-  border-radius: 4px;
-  overflow: hidden;
-  margin-bottom: 16px;
-}
+  .progress span {
+    display: block;
+    height: 100%;
+    width: 0%;
+    background: #2e7d32;
+    transition: width 0.4s ease;
+  }
 
-.progress span {
-  display: block;
-  height: 100%;
-  width: 0%;
-  background: #2e7d32;
-  transition: width 0.4s ease;
-}
+  label {
+    font-weight: bold;
+    margin-top: 14px;
+    display: block;
+  }
 
-label {
-  font-weight: bold;
-  margin-top: 14px;
-  display: block;
-}
+  input, select, textarea, button {
+    width: 100%;
+    padding: 12px;
+    margin-top: 6px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    font-size: 15px;
+    box-sizing: border-box;
+  }
 
-input, select, textarea, button {
-  width: 100%;
-  padding: 12px;
-  margin-top: 6px;
-  border-radius: 10px;
-  border: 1px solid #ccc;
-  font-size: 15px;
-  box-sizing: border-box;
-}
+  button {
+    background: #6a1b9a;
+    color: #fff;
+    border: none;
+    margin-top: 16px;
+    font-weight: bold;
+    cursor: pointer;
+  }
 
-textarea { resize: vertical; }
+  button.sucesso { background: #2e7d32; }
+  button:disabled { opacity: 0.7; }
 
-button {
-  background: #6a1b9a;
-  color: #fff;
-  border: none;
-  margin-top: 16px;
-  font-weight: bold;
-}
+  .final {
+    text-align: center;
+  }
 
-button.sucesso { background: #2e7d32; }
-button:disabled { opacity: 0.7; }
+  .final .check {
+    font-size: 56px;
+    color: #2e7d32;
+  }
 
-.final { text-align: center; }
-.final .check { font-size: 56px; color: #2e7d32; }
+  h2.titulo-form {
+    text-align: center;
+    margin-bottom: 16px;
+  }
 
 </style>
 </head>
@@ -171,12 +169,14 @@ button:disabled { opacity: 0.7; }
 
 <!-- SEGUNDA TELA -->
 <div id="formulario">
+  <!-- Fundo contínuo -->
   <div id="fundo-topo"></div>
   <div id="fundo-baixo"></div>
 
+  <!-- Formulário -->
   <div class="card-container">
     <div class="card" id="card">
-      <h2>Visitas Externas</h2>
+      <h2 class="titulo-form">Visitas Externas</h2>
       <div class="progress"><span id="progressBar"></span></div>
 
       <label>Vendedor</label>
@@ -222,6 +222,7 @@ button:disabled { opacity: 0.7; }
       <input type="file" id="camera" hidden accept="image/*" capture="environment">
 
       <button id="btnEnviar" onclick="enviar()">✅ Confirmar Visita</button>
+      <p id="statusFoto"></p>
       <p id="status"></p>
     </div>
   </div>
@@ -230,35 +231,25 @@ button:disabled { opacity: 0.7; }
 <script>
 let latitude, longitude, endereco = "", fotoBase64 = null;
 
-// URL do Google Apps Script
 const API_URL = "https://script.google.com/macros/s/AKfycbw3kM0KukrHTN_c0K0fQQXJAKFxBFVd4EmOyuopHBsmrac9agIgrBZvWxzUnIdo_xzG9w/exec";
 
-// Mostrar formulário
-function mostrarFormulario() {
-  const intro = document.getElementById("intro");
-  const form = document.getElementById("formulario");
-  const card = document.getElementById("card");
+const campos = ["vendedor","codigoVendedor","loja","tipoCliente","statusVisita"];
+campos.forEach(id => document.getElementById(id).addEventListener("input", atualizarProgresso));
 
+function atualizarProgresso() {
+  const p = campos.filter(id => document.getElementById(id).value).length;
+  progressBar.style.width = (p / campos.length) * 100 + "%";
+}
+
+function mostrarFormulario() {
   intro.classList.add("fade-out");
   setTimeout(() => {
     intro.style.display = "none";
-    form.style.display = "block";
-    setTimeout(() => {
-      card.style.opacity = 1;
-      card.style.transform = "translateY(0)";
-    }, 50);
-  }, 800); // transição um pouco mais rápida
+    formulario.style.display = "block";
+    setTimeout(() => card.style.opacity = 1, 50); // card sobe suavemente
+  }, 1200);
 }
 
-// Barra de progresso
-const campos = ["vendedor","codigoVendedor","loja","tipoCliente","statusVisita"];
-campos.forEach(id => document.getElementById(id).addEventListener("input", atualizarProgresso));
-function atualizarProgresso() {
-  const p = campos.filter(id => document.getElementById(id).value).length;
-  document.getElementById("progressBar").style.width = (p / campos.length) * 100 + "%";
-}
-
-// Captura de localização
 function capturarLocalizacao() {
   navigator.geolocation.getCurrentPosition(async pos => {
     latitude = pos.coords.latitude;
@@ -268,40 +259,38 @@ function capturarLocalizacao() {
     const data = await res.json();
     endereco = data.display_name || "";
 
-    const btn = document.getElementById("btnLoc");
-    btn.textContent = "Localização capturada ✅";
-    btn.classList.add("sucesso");
-    document.getElementById("localizacao").innerText = endereco;
-    atualizarProgresso(); // conta no progresso
+    btnLoc.textContent = "Localização capturada ✅";
+    btnLoc.classList.add("sucesso");
+    localizacao.innerText = endereco;
   });
 }
 
-// Câmera
-document.getElementById("camera").addEventListener("change", e => {
+camera.addEventListener("change", e => {
   const r = new FileReader();
   r.onload = () => {
     fotoBase64 = r.result;
-    alert("Imagem salva");
-    atualizarProgresso();
+    statusFoto.textContent = "Imagem salva ✅";
   };
   r.readAsDataURL(e.target.files[0]);
 });
 
-function abrirCamera() { document.getElementById("camera").click(); }
+function abrirCamera() {
+  camera.click();
+}
 
-// Envio do formulário
 function enviar() {
-  if (!latitude || !fotoBase64) { alert("Falta localização ou foto"); return; }
+  btnEnviar.textContent = "Enviando...";
+  btnEnviar.disabled = true;
 
   fetch(API_URL, {
     method: "POST",
     body: JSON.stringify({
-      vendedor: document.getElementById("vendedor").value,
-      codigoVendedor: document.getElementById("codigoVendedor").value,
-      loja: document.getElementById("loja").value,
-      tipoCliente: document.getElementById("tipoCliente").value,
-      statusVisita: document.getElementById("statusVisita").value,
-      observacoes: document.getElementById("observacoes").value,
+      vendedor: vendedor.value,
+      codigoVendedor: codigoVendedor.value,
+      loja: loja.value,
+      tipoCliente: tipoCliente.value,
+      statusVisita: statusVisita.value,
+      observacoes: observacoes.value,
       lat: latitude,
       lng: longitude,
       endereco: endereco,
@@ -310,18 +299,17 @@ function enviar() {
   })
   .then(r => r.json())
   .then(() => {
-    const card = document.getElementById("card");
-    card.innerHTML = `
-      <div class="final">
-        <div class="check">✅</div>
-        <h2>Visita confirmada</h2>
-        <p>Dados enviados com sucesso</p>
-        <button onclick="window.close()">Finalizar</button>
-      </div>
-    `;
+    status.textContent = "Visita confirmada ✅";
+    card.innerHTML += `<div class="final">
+      <div class="check">✅</div>
+      <h2>Visita registrada</h2>
+      <p>Dados enviados com sucesso</p>
+      <button onclick="window.close()">Finalizar</button>
+    </div>`;
   })
   .catch(() => {
-    document.getElementById("status").innerText = "Erro ao enviar dados";
+    btnEnviar.textContent = "Erro ao enviar";
+    btnEnviar.disabled = false;
   });
 }
 </script>
