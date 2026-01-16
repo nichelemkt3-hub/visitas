@@ -22,11 +22,12 @@ html, body {
   justify-content: center;
   align-items: center;
   background: linear-gradient(180deg, #6a1b9a, #9c27b0, #ffca28);
-  transition: opacity 1.5s ease;
+  transition: opacity 1.5s ease, filter 1.5s ease;
 }
 
 #intro.fade-out {
   opacity: 0;
+  filter: blur(14px);
   pointer-events: none;
 }
 
@@ -51,32 +52,35 @@ html, body {
   transition: opacity 1.5s ease;
   min-height: 100vh;
   width: 100%;
-  background-image: url("fundonicheletintas.png"); /* sua imagem de fundo */
-  background-size: cover;  /* cobre a tela inteira */
-  background-position: center top; /* posiciona a logo no topo */
+  background-image: url("fundonicheletintas.png"); /* imagem de fundo */
+  background-size: cover;
+  background-position: center top;
   background-repeat: no-repeat;
 
   display: flex;
   justify-content: center;
-  align-items: flex-start; /* para dar espaço em cima */
-  padding-top: 60px;       /* aumenta espaço superior */
+  align-items: flex-start; /* espaçamento superior */
+  padding-top: 60px; 
   box-sizing: border-box;
-}
-
-#formulario.ativo {
-  display: flex;
-  opacity: 1;
 }
 
 /* CARD DO QUESTIONÁRIO */
 .card {
   background: #fff;
-  max-width: 380px;  /* já confirmado como perfeito */
-  width: 85%;        /* espaço lateral */
+  max-width: 380px;
+  width: 85%; /* espaço lateral */
   padding: 40px 20px;
   border-radius: 20px;
   box-shadow: 0 10px 30px rgba(0,0,0,0.25);
   text-align: center;
+  transform: translateY(100px); /* inicia descendo */
+  opacity: 0;
+  transition: all 1.2s ease; /* animação card subindo */
+}
+
+#formulario.ativo .card {
+  transform: translateY(0); /* sobe para posição final */
+  opacity: 1;
 }
 
 /* Barra de progresso */
@@ -190,28 +194,29 @@ h2 {
 <script>
 let latitude, longitude, endereco = "", fotoBase64 = null;
 
-// URL do seu WebApp Google Apps Script
 const API_URL = "https://script.google.com/macros/s/AKfycbw3kM0KukrHTN_c0K0fQQXJAKFxBFVd4EmOyuopHBsmrac9agIgrBZvWxzUnIdo_xzG9w/exec";
 
-// Campos para barra de progresso
+// Barra de progresso
 const campos = ["vendedor","codigoVendedor","loja","tipoCliente","statusVisita"];
 campos.forEach(id => document.getElementById(id).addEventListener("input", atualizarProgresso));
-
 function atualizarProgresso() {
   const p = campos.filter(id => document.getElementById(id).value).length;
   document.getElementById("progressBar").style.width = (p / campos.length) * 100 + "%";
 }
 
-// --- TRANSIÇÃO DE TELAS ---
+// TRANSIÇÃO TELA INICIAL → QUESTIONÁRIO
 function mostrarFormulario() {
   const intro = document.getElementById("intro");
   const form = document.getElementById("formulario");
 
-  intro.classList.add("fade-out");
-  setTimeout(() => form.classList.add("ativo"), 1500);
+  intro.classList.add("fade-out"); // fade e blur
+  setTimeout(() => {
+    form.style.display = "flex";
+    setTimeout(() => form.classList.add("ativo"), 50); // card sobe de baixo
+  }, 1500);
 }
 
-// --- LOCALIZAÇÃO ---
+// LOCALIZAÇÃO
 function capturarLocalizacao() {
   navigator.geolocation.getCurrentPosition(async pos => {
     latitude = pos.coords.latitude;
@@ -228,14 +233,18 @@ function capturarLocalizacao() {
   });
 }
 
-// --- CÂMERA ---
+// CÂMERA
 document.getElementById("camera").addEventListener("change", e => {
   const reader = new FileReader();
   reader.onload = () => fotoBase64 = reader.result;
   reader.readAsDataURL(e.target.files[0]);
 });
 
-// --- ENVIO ---
+function abrirCamera() {
+  document.getElementById("camera").click();
+}
+
+// ENVIO
 function enviar() {
   const btnEnviar = document.getElementById("btnEnviar");
   btnEnviar.textContent = "Enviando...";
@@ -272,11 +281,6 @@ function enviar() {
     btnEnviar.textContent = "Erro ao enviar";
     btnEnviar.disabled = false;
   });
-}
-
-// --- ABRIR CÂMERA ---
-function abrirCamera() {
-  document.getElementById("camera").click();
 }
 </script>
 </body>
