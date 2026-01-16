@@ -37,7 +37,7 @@ html, body {
   border-radius: 12px;
   cursor: pointer;
   transition: background 0.3s;
-  max-width: 220px;    /* largura menor e centralizada */
+  max-width: 200px;    /* largura menor e centralizada */
   width: 100%;
 }
 #intro button:hover { background: #4a148c; }
@@ -48,10 +48,13 @@ html, body {
   min-height: 100vh;
   padding: 0;
   position: relative;
+
+  /* IMAGEM DE FUNDO */
   background-image: url("fundonicheletintas.png");
   background-size: contain;
   background-position: top center;
   background-repeat: no-repeat;
+
   text-align: center;
 }
 
@@ -60,7 +63,7 @@ html, body {
   content: "";
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.2);
+  background: rgba(0,0,0,0.15);
   z-index: 0;
 }
 
@@ -73,12 +76,20 @@ html, body {
   position: relative;
   z-index: 1;
   background: #fff;
-  max-width: 380px;       /* largura do card menor que a tela */
-  margin: 120px auto 60px; /* mais espaço em cima, centralizado horizontal */
-  padding: 80px 24px 80px;
+  max-width: 350px;           /* largura menor para mostrar fundo */
+  margin: 180px auto 60px;    /* mais espaço em cima */
+  padding: 80px 24px 60px;
   border-radius: 20px;
   box-shadow: 0 18px 45px rgba(0,0,0,0.25);
   text-align: left;
+}
+
+/* TÍTULO DO CARD */
+.card h2 {
+  text-align: center;
+  color: #6a1b9a;
+  margin-bottom: 16px;
+  font-size: 22px;
 }
 
 /* barra de progresso */
@@ -150,6 +161,8 @@ button:disabled { opacity: 0.7; }
 <!-- FORMULÁRIO -->
 <div id="formulario">
   <div class="card" id="card">
+    <h2>Visitas Externas</h2> <!-- título acima da barra de progresso -->
+
     <div class="progress"><span id="progressBar"></span></div>
 
     <label>Vendedor</label>
