@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Validação de Visita</title>
+<title>Validação de Visita – Nichele Tintas</title>
 <style>
 html, body {
   margin: 0;
@@ -23,6 +23,7 @@ html, body {
   align-items: center;
   background: linear-gradient(180deg, #6a1b9a, #9c27b0, #ffca28);
   transition: opacity 1.5s ease, filter 1.5s ease;
+  z-index: 10;
 }
 
 #intro.fade-out {
@@ -39,73 +40,66 @@ html, body {
   border: none;
   border-radius: 12px;
   cursor: pointer;
-  max-width: 200px;
+  max-width: 220px;
   width: 70%;
   text-align: center;
+  transition: background 0.3s;
 }
 #intro button:hover { background: #4a148c; }
 
 /* --- SEGUNDA TELA --- */
 #formulario {
-  display: none;
-  opacity: 0;
-  transition: opacity 1.5s ease;
+  opacity: 0;             
+  pointer-events: none;   
   min-height: 100vh;
   width: 100%;
-  background-image: url("fundonicheletintas.png"); /* imagem de fundo */
+  background-image: url("fundonicheletintas.png"); 
   background-size: cover;
   background-position: center top;
   background-repeat: no-repeat;
 
   display: flex;
   justify-content: center;
-  align-items: flex-start; /* espaçamento superior */
-  padding-top: 60px; 
+  align-items: flex-start;
+  padding-top: 80px; 
   box-sizing: border-box;
+  transition: opacity 1.5s ease;
 }
 
-/* CARD DO QUESTIONÁRIO */
+#formulario.ativo {
+  opacity: 1;
+  pointer-events: auto;  
+}
+
+/* --- CARD --- */
 .card {
   background: #fff;
-  max-width: 380px;
-  width: 85%; /* espaço lateral */
-  padding: 40px 20px;
+  max-width: 320px;
+  width: 85%;
+  padding: 40px 25px;
   border-radius: 20px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.25);
-  text-align: center;
-  transform: translateY(100px); /* inicia descendo */
+  box-shadow: 0 15px 40px rgba(0,0,0,0.25);
+  text-align: left;
+
+  /* animação de entrada */
+  transform: translateY(100px);
   opacity: 0;
-  transition: all 1.2s ease; /* animação card subindo */
+  transition: transform 1.2s ease, opacity 1.2s ease;
 }
 
-#formulario.ativo .card {
-  transform: translateY(0); /* sobe para posição final */
-  opacity: 1;
+.card h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #6a1b9a;
 }
 
-/* Barra de progresso */
-.progress {
-  height: 4px;
-  background: #e0e0e0;
-  border-radius: 4px;
-  overflow: hidden;
-  margin-bottom: 16px;
-}
-.progress span {
-  display: block;
-  height: 100%;
-  width: 0%;
-  background: #2e7d32;
-  transition: width 0.4s ease;
-}
-
-/* Labels e Inputs */
+/* Campos do questionário */
 label {
   font-weight: bold;
   margin-top: 14px;
   display: block;
-  text-align: left;
 }
+
 input, select, textarea, button {
   width: 100%;
   padding: 12px;
@@ -116,19 +110,45 @@ input, select, textarea, button {
   box-sizing: border-box;
 }
 
+textarea {
+  resize: vertical;
+}
+
 button {
   background: #6a1b9a;
   color: #fff;
   border: none;
   margin-top: 16px;
   font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s;
 }
-button.sucesso { background: #2e7d32; }
-button:disabled { opacity: 0.7; }
+button:hover { background: #4a148c; }
 
-h2 {
-  margin-bottom: 12px;
-  color: #6a1b9a;
+.progress {
+  height: 4px;
+  background: #e0e0e0;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+
+.progress span {
+  display: block;
+  height: 100%;
+  width: 0%;
+  background: #2e7d32;
+  transition: width 0.4s ease;
+}
+
+#localizacao {
+  font-size: 14px;
+  margin-top: 6px;
+}
+
+#preview {
+  max-width: 100%;
+  margin-top: 10px;
 }
 </style>
 </head>
@@ -141,7 +161,7 @@ h2 {
 
 <!-- SEGUNDA TELA -->
 <div id="formulario">
-  <div class="card">
+  <div class="card" id="card">
     <h2>Visitas Externas</h2>
     <div class="progress"><span id="progressBar"></span></div>
 
@@ -179,7 +199,7 @@ h2 {
     </select>
 
     <label>Observações</label>
-    <textarea id="observacoes"></textarea>
+    <textarea id="observacoes" rows="3"></textarea>
 
     <button id="btnLoc" onclick="capturarLocalizacao()">📍 Capturar Localização</button>
     <p id="localizacao"></p>
@@ -196,27 +216,34 @@ let latitude, longitude, endereco = "", fotoBase64 = null;
 
 const API_URL = "https://script.google.com/macros/s/AKfycbw3kM0KukrHTN_c0K0fQQXJAKFxBFVd4EmOyuopHBsmrac9agIgrBZvWxzUnIdo_xzG9w/exec";
 
-// Barra de progresso
-const campos = ["vendedor","codigoVendedor","loja","tipoCliente","statusVisita"];
+// Barra de progresso simples
+const campos = ["vendedor","codigoVendedor","loja","tipoCliente","statusVisita","observacoes"];
 campos.forEach(id => document.getElementById(id).addEventListener("input", atualizarProgresso));
 function atualizarProgresso() {
   const p = campos.filter(id => document.getElementById(id).value).length;
-  document.getElementById("progressBar").style.width = (p / campos.length) * 100 + "%";
+  progressBar.style.width = (p / campos.length) * 100 + "%";
 }
 
-// TRANSIÇÃO TELA INICIAL → QUESTIONÁRIO
+// --- TRANSIÇÃO ---
 function mostrarFormulario() {
   const intro = document.getElementById("intro");
   const form = document.getElementById("formulario");
+  const card = document.getElementById("card");
 
-  intro.classList.add("fade-out"); // fade e blur
+  // Desaparece a primeira tela
+  intro.classList.add("fade-out");
+
+  // Ativa a segunda tela
+  form.classList.add("ativo");
+
+  // Card sobe de baixo para cima
   setTimeout(() => {
-    form.style.display = "flex";
-    setTimeout(() => form.classList.add("ativo"), 50); // card sobe de baixo
-  }, 1500);
+    card.style.transform = "translateY(0)";
+    card.style.opacity = "1";
+  }, 50);
 }
 
-// LOCALIZAÇÃO
+// --- LOCALIZAÇÃO ---
 function capturarLocalizacao() {
   navigator.geolocation.getCurrentPosition(async pos => {
     latitude = pos.coords.latitude;
@@ -226,39 +253,33 @@ function capturarLocalizacao() {
     const data = await res.json();
     endereco = data.display_name || "";
 
-    const btnLoc = document.getElementById("btnLoc");
     btnLoc.textContent = "Localização capturada ✅";
-    btnLoc.classList.add("sucesso");
-    document.getElementById("localizacao").innerText = endereco;
-  });
+    btnLoc.style.background = "#2e7d32";
+    localizacao.innerText = endereco;
+  }, () => alert("Erro ao capturar localização"));
 }
 
-// CÂMERA
+// --- CÂMERA ---
 document.getElementById("camera").addEventListener("change", e => {
   const reader = new FileReader();
   reader.onload = () => fotoBase64 = reader.result;
   reader.readAsDataURL(e.target.files[0]);
 });
 
-function abrirCamera() {
-  document.getElementById("camera").click();
-}
-
-// ENVIO
+// --- ENVIO ---
 function enviar() {
-  const btnEnviar = document.getElementById("btnEnviar");
   btnEnviar.textContent = "Enviando...";
   btnEnviar.disabled = true;
 
   fetch(API_URL, {
     method: "POST",
     body: JSON.stringify({
-      vendedor: document.getElementById("vendedor").value,
-      codigoVendedor: document.getElementById("codigoVendedor").value,
-      loja: document.getElementById("loja").value,
-      tipoCliente: document.getElementById("tipoCliente").value,
-      statusVisita: document.getElementById("statusVisita").value,
-      observacoes: document.getElementById("observacoes").value,
+      vendedor: vendedor.value,
+      codigoVendedor: codigoVendedor.value,
+      loja: loja.value,
+      tipoCliente: tipoCliente.value,
+      statusVisita: statusVisita.value,
+      observacoes: observacoes.value,
       lat: latitude,
       lng: longitude,
       endereco: endereco,
@@ -267,10 +288,9 @@ function enviar() {
   })
   .then(r => r.json())
   .then(() => {
-    const card = document.querySelector(".card");
     card.innerHTML = `
-      <div class="final">
-        <div class="check">✅</div>
+      <div style="text-align:center">
+        <div style="font-size:56px;color:#2e7d32">✅</div>
         <h2>Visita registrada</h2>
         <p>Dados enviados com sucesso</p>
         <button onclick="window.close()">Finalizar</button>
@@ -282,6 +302,12 @@ function enviar() {
     btnEnviar.disabled = false;
   });
 }
+
+// --- ABRIR CÂMERA ---
+function abrirCamera() {
+  document.getElementById("camera").click();
+}
 </script>
+
 </body>
 </html>
