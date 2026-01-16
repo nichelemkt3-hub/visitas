@@ -22,7 +22,6 @@ html, body {
   100% { background-position: 0% 50%; }
 }
 
-/* ---------- TELA INICIAL ---------- */
 #intro {
   position: fixed;
   inset: 0;
@@ -45,19 +44,15 @@ html, body {
   color: #fff;
   border: none;
   border-radius: 12px;
-  cursor: pointer;
-  width: auto;
-  display: inline-block;
 }
 
-/* ---------- FORMULÁRIO ---------- */
 #formulario {
   display: none;
   padding: 40px 20px 60px;
   opacity: 0;
-  filter: blur(16px);
-  transform: translateY(60px);
-  transition: opacity 1.6s ease, filter 1.6s ease, transform 1.6s ease;
+  filter: blur(14px);
+  transform: translateY(14px);
+  transition: all 1.6s ease;
 }
 
 #formulario.ativo {
@@ -76,7 +71,6 @@ html, body {
   text-align: left;
 }
 
-/* ---------- PROGRESSO ---------- */
 .progress {
   height: 4px;
   background: #e0e0e0;
@@ -93,48 +87,33 @@ html, body {
   transition: width 0.4s ease;
 }
 
-/* ---------- FORM ---------- */
 label {
   font-weight: bold;
   margin-top: 14px;
   display: block;
 }
 
-input, select, textarea {
+input, select, textarea, button {
   width: 100%;
   padding: 12px;
   margin-top: 6px;
   border-radius: 10px;
   border: 1px solid #ccc;
   font-size: 15px;
+  box-sizing: border-box;
 }
 
-/* ---------- BOTÕES ---------- */
 button {
-  width: 100%;
-  border-radius: 14px;
-  border: none;
-  font-size: 16px;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-.acao {
-  margin-top: 14px;
-  padding: 14px;
   background: #6a1b9a;
   color: #fff;
+  border: none;
+  margin-top: 16px;
+  font-weight: bold;
 }
 
-.acao.sucesso {
-  background: #2e7d32;
-}
+button.sucesso { background: #2e7d32; }
+button:disabled { opacity: 0.7; }
 
-.acao:disabled {
-  opacity: 0.7;
-}
-
-/* ---------- FINAL ---------- */
 .final {
   text-align: center;
 }
@@ -188,13 +167,16 @@ button {
       <option>Sem interesse</option>
     </select>
 
-    <button id="btnLoc" class="acao" onclick="capturarLocalizacao()">📍 Capturar Localização</button>
+    <label>Observações</label>
+    <textarea id="observacoes"></textarea>
+
+    <button id="btnLoc" onclick="capturarLocalizacao()">📍 Capturar Localização</button>
     <p id="localizacao"></p>
 
-    <button class="acao" onclick="abrirCamera()">📸 Tirar Foto</button>
+    <button onclick="abrirCamera()">📸 Tirar Foto</button>
     <input type="file" id="camera" hidden accept="image/*" capture="environment">
 
-    <button id="btnEnviar" class="acao" onclick="enviar()">✅ Confirmar Visita</button>
+    <button id="btnEnviar" onclick="enviar()">✅ Confirmar Visita</button>
   </div>
 </div>
 
@@ -203,21 +185,13 @@ let latitude, longitude, endereco = "", fotoBase64 = null;
 
 const API_URL = "https://script.google.com/macros/s/AKfycbw3kM0KukrHTN_c0K0fQQXJAKFxBFVd4EmOyuopHBsmrac9agIgrBZvWxzUnIdo_xzG9w/exec";
 
-const campos = ["vendedor","codigoVendedor","loja","tipoCliente","statusVisita"];
-let localOk = false;
-let fotoOk = false;
+const campos = ["vendedor","codigoVendedor","loja","tipoCliente","statusVisita","observacoes"];
+campos.forEach(id => document.getElementById(id).addEventListener("input", atualizarProgresso));
 
 function atualizarProgresso() {
-  let total = campos.length + 2;
-  let feito = campos.filter(id => document.getElementById(id).value).length;
-  if (localOk) feito++;
-  if (fotoOk) feito++;
-  progressBar.style.width = (feito / total) * 100 + "%";
+  const p = campos.filter(id => document.getElementById(id).value).length;
+  progressBar.style.width = (p / campos.length) * 100 + "%";
 }
-
-campos.forEach(id =>
-  document.getElementById(id).addEventListener("input", atualizarProgresso)
-);
 
 function mostrarFormulario() {
   intro.classList.add("fade-out");
@@ -232,24 +206,20 @@ function capturarLocalizacao() {
   navigator.geolocation.getCurrentPosition(async pos => {
     latitude = pos.coords.latitude;
     longitude = pos.coords.longitude;
-    localOk = true;
+
+    const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`);
+    const data = await res.json();
+    endereco = data.display_name || "";
+
     btnLoc.textContent = "Localização capturada ✅";
     btnLoc.classList.add("sucesso");
-    atualizarProgresso();
+    localizacao.innerText = endereco;
   });
-}
-
-function abrirCamera() {
-  camera.click();
 }
 
 camera.addEventListener("change", e => {
   const r = new FileReader();
-  r.onload = () => {
-    fotoBase64 = r.result;
-    fotoOk = true;
-    atualizarProgresso();
-  };
+  r.onload = () => fotoBase64 = r.result;
   r.readAsDataURL(e.target.files[0]);
 });
 
@@ -265,10 +235,11 @@ function enviar() {
       loja: loja.value,
       tipoCliente: tipoCliente.value,
       statusVisita: statusVisita.value,
+      observacoes: observacoes.value,
       lat: latitude,
       lng: longitude,
-      endereco,
-      fotoBase64
+      endereco: endereco,
+      fotoBase64: fotoBase64
     })
   })
   .then(r => r.json())
@@ -278,9 +249,13 @@ function enviar() {
         <div class="check">✅</div>
         <h2>Visita registrada</h2>
         <p>Dados enviados com sucesso</p>
-        <button class="acao" onclick="window.close()">Finalizar</button>
+        <button onclick="window.close()">Finalizar</button>
       </div>
     `;
+  })
+  .catch(() => {
+    btnEnviar.textContent = "Erro ao enviar";
+    btnEnviar.disabled = false;
   });
 }
 </script>
