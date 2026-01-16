@@ -3,78 +3,77 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Validação de Visitas</title>
+<title>Validação de Visita – Nichele Tintas</title>
 
 <style>
-  html, body {
-    margin: 0;
-    padding: 0;
-    font-family: Arial, sans-serif;
-    height: 100%;
-    overflow-x: hidden;
-  }
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  height: 100%;
+  overflow-x: hidden;
+}
 
-  /* --- PRIMEIRA TELA COM CAPA --- */
-  #intro {
-    position: fixed;
-    inset: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: url('capa.png') no-repeat center top;
-    background-size: cover;
-    z-index: 3;
-  }
+/* ================= PRIMEIRA TELA ================= */
+#intro {
+  position: fixed;
+  inset: 0;
+  background: url('capa.png') no-repeat center top;
+  background-size: cover;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: opacity 2.2s ease, filter 2.2s ease;
+  z-index: 10;
+}
 
-  #intro button {
-    font-size: 18px;
-    padding: 14px 28px;
-    background: #6a1b9a;
-    color: #fff;
-    border: none;
-    border-radius: 12px;
-    max-width: 250px;
-    width: 80%;
-    cursor: pointer;
-  }
+#intro.fade-out {
+  opacity: 0;
+  filter: blur(18px);
+  pointer-events: none;
+}
 
-  #intro.fade-out {
-    opacity: 0;
-    transition: opacity 1.2s ease;
-    pointer-events: none;
-  }
+#intro button {
+  font-size: 16px;
+  padding: 12px 26px;
+  max-width: 220px;
+  background: #6a1b9a;
+  color: #fff;
+  border: none;
+  border-radius: 14px;
+  cursor: pointer;
+}
 
-  /* --- SEGUNDA TELA --- */
-  #formulario {
-    display: none;
-    position: relative;
-    width: 100%;
-    min-height: 100vh;
-  }
+/* ================= SEGUNDA TELA ================= */
+#formulario {
+  opacity: 0;
+  pointer-events: none;
+  min-height: 100vh;
+  width: 100%;
 
-  /* Fundo topo e baixo contínuo */
+  /* 🔹 FUNDO COM DUAS IMAGENS CONTÍNUAS */
   background-image: 
     url("topo.png"),
     url("baixo.png");
 
   background-repeat: 
     no-repeat,
-    repeat-y;
+    no-repeat;
 
   background-position: 
-    center top,
-    center top;
+    top,
+    bottom;
 
   background-size: 
-    105% auto,
-    105% auto;
+    100% auto,
+    100% auto;
 
   display: flex;
   justify-content: center;
   align-items: flex-start;
 
   padding-top: 90px;
-  padding-bottom: 60px;
+  padding-bottom: 90px; /* igual ao topo para manter equilíbrio */
 
   transition: opacity 2.2s ease;
 }
@@ -84,92 +83,78 @@
   pointer-events: auto;
 }
 
-  /* Container do card */
-  .card-container {
-    position: absolute;
-    top: 80px;
-    bottom: 80px;
-    left: 16px;   /* espaço lateral */
-    right: 16px;  /* espaço lateral */
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    z-index: 2;
-  }
+/* ================= CARD ================= */
+.card {
+  background: #fff;
+  width: 78%;
+  max-width: 300px;
+  padding: 38px 26px 40px;
+  border-radius: 22px;
+  box-shadow: 0 18px 45px rgba(0,0,0,0.28);
 
-  .card {
-    background: #fff;
-    max-width: 380px;
-    width: 100%;
-    padding: 28px 24px 32px;
-    border-radius: 20px;
-    box-shadow: 0 18px 45px rgba(0,0,0,0.25);
-    text-align: left;
-    opacity: 0;
-    transform: translateY(40px);
-    transition: all 1.0s ease;
-  }
+  transform: translateY(140px);
+  opacity: 0;
+  transition: transform 1.8s ease, opacity 1.8s ease;
+}
 
-  .progress {
-    height: 4px;
-    background: #e0e0e0;
-    border-radius: 4px;
-    overflow: hidden;
-    margin-bottom: 16px;
-  }
+.card h2 {
+  text-align: center;
+  color: #6a1b9a;
+  margin-bottom: 18px;
+}
 
-  .progress span {
-    display: block;
-    height: 100%;
-    width: 0%;
-    background: #2e7d32;
-    transition: width 0.4s ease;
-  }
+/* ================= FORM ================= */
+label {
+  font-weight: bold;
+  display: block;
+  margin-top: 14px;
+}
 
-  label {
-    font-weight: bold;
-    margin-top: 14px;
-    display: block;
-  }
+input, select, textarea, button {
+  width: 100%;
+  padding: 12px;
+  margin-top: 6px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  font-size: 15px;
+  box-sizing: border-box;
+}
 
-  input, select, textarea, button {
-    width: 100%;
-    padding: 12px;
-    margin-top: 6px;
-    border-radius: 10px;
-    border: 1px solid #ccc;
-    font-size: 15px;
-    box-sizing: border-box;
-  }
+textarea { resize: vertical; }
 
-  button {
-    background: #6a1b9a;
-    color: #fff;
-    border: none;
-    margin-top: 16px;
-    font-weight: bold;
-    cursor: pointer;
-  }
+button {
+  background: #6a1b9a;
+  color: #fff;
+  border: none;
+  margin-top: 16px;
+  font-weight: bold;
+  cursor: pointer;
+}
 
-  button.sucesso { background: #2e7d32; }
-  button:disabled { opacity: 0.7; }
+/* ================= PROGRESSO ================= */
+.progress {
+  height: 4px;
+  background: #e0e0e0;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 18px;
+}
 
-  .final {
-    text-align: center;
-  }
+.progress span {
+  display: block;
+  height: 100%;
+  width: 0%;
+  background: #2e7d32;
+  transition: width 0.4s ease;
+}
 
-  .final .check {
-    font-size: 56px;
-    color: #2e7d32;
-  }
-
-  h2.titulo-form {
-    text-align: center;
-    margin-bottom: 16px;
-  }
-
+#localizacao {
+  font-size: 13px;
+  margin-top: 6px;
+}
 </style>
 </head>
+
 <body>
 
 <!-- PRIMEIRA TELA -->
@@ -179,62 +164,56 @@
 
 <!-- SEGUNDA TELA -->
 <div id="formulario">
-  <!-- Fundo contínuo -->
-  <div id="fundo-topo"></div>
-  <div id="fundo-baixo"></div>
+  <div class="card" id="card">
+    <h2>Visitas Externas</h2>
 
-  <!-- Formulário -->
-  <div class="card-container">
-    <div class="card" id="card">
-      <h2 class="titulo-form">Visitas Externas</h2>
-      <div class="progress"><span id="progressBar"></span></div>
-
-      <label>Vendedor</label>
-      <input id="vendedor">
-
-      <label>Código do Vendedor</label>
-      <input id="codigoVendedor">
-
-      <label>Loja</label>
-      <select id="loja">
-        <option value="">Selecione</option>
-        <option>Água Verde</option>
-        <option>Portão</option>
-        <option>Sprada</option>
-      </select>
-
-      <label>Tipo de Cliente</label>
-      <select id="tipoCliente">
-        <option value="">Selecione</option>
-        <option>Obra ativa</option>
-        <option>Pintor profissional</option>
-        <option>Cliente corporativo</option>
-        <option>Cliente loja</option>
-      </select>
-
-      <label>Status da Visita</label>
-      <select id="statusVisita">
-        <option value="">Selecione</option>
-        <option>Prospecção</option>
-        <option>Orçamento</option>
-        <option>Negociação</option>
-        <option>Fechado</option>
-        <option>Sem interesse</option>
-      </select>
-
-      <label>Observações</label>
-      <textarea id="observacoes"></textarea>
-
-      <button id="btnLoc" onclick="capturarLocalizacao()">📍 Capturar Localização</button>
-      <p id="localizacao"></p>
-
-      <button onclick="abrirCamera()">📸 Tirar Foto</button>
-      <input type="file" id="camera" hidden accept="image/*" capture="environment">
-
-      <button id="btnEnviar" onclick="enviar()">✅ Confirmar Visita</button>
-      <p id="statusFoto"></p>
-      <p id="status"></p>
+    <div class="progress">
+      <span id="progressBar"></span>
     </div>
+
+    <label>Vendedor</label>
+    <input id="vendedor">
+
+    <label>Código do Vendedor</label>
+    <input id="codigoVendedor">
+
+    <label>Loja</label>
+    <select id="loja">
+      <option value="">Selecione</option>
+      <option>Água Verde</option>
+      <option>Portão</option>
+      <option>Sprada</option>
+    </select>
+
+    <label>Tipo de Cliente</label>
+    <select id="tipoCliente">
+      <option value="">Selecione</option>
+      <option>Obra ativa</option>
+      <option>Pintor profissional</option>
+      <option>Cliente corporativo</option>
+      <option>Cliente loja</option>
+    </select>
+
+    <label>Status da Visita</label>
+    <select id="statusVisita">
+      <option value="">Selecione</option>
+      <option>Prospecção</option>
+      <option>Orçamento</option>
+      <option>Negociação</option>
+      <option>Fechado</option>
+      <option>Sem interesse</option>
+    </select>
+
+    <label>Observações</label>
+    <textarea id="observacoes" rows="3"></textarea>
+
+    <button id="btnLoc" onclick="capturarLocalizacao()">📍 Capturar Localização</button>
+    <p id="localizacao"></p>
+
+    <button onclick="abrirCamera()">📸 Tirar Foto</button>
+    <input type="file" id="camera" hidden accept="image/*" capture="environment">
+
+    <button id="btnEnviar" onclick="enviar()">✅ Confirmar Visita</button>
   </div>
 </div>
 
@@ -243,55 +222,53 @@ let latitude, longitude, endereco = "", fotoBase64 = null;
 
 const API_URL = "https://script.google.com/macros/s/AKfycbw3kM0KukrHTN_c0K0fQQXJAKFxBFVd4EmOyuopHBsmrac9agIgrBZvWxzUnIdo_xzG9w/exec";
 
-const campos = ["vendedor","codigoVendedor","loja","tipoCliente","statusVisita"];
-campos.forEach(id => document.getElementById(id).addEventListener("input", atualizarProgresso));
+/* progresso */
+const campos = ["vendedor","codigoVendedor","loja","tipoCliente","statusVisita","observacoes"];
+campos.forEach(id =>
+  document.getElementById(id).addEventListener("input", atualizarProgresso)
+);
 
 function atualizarProgresso() {
-  const p = campos.filter(id => document.getElementById(id).value).length;
-  progressBar.style.width = (p / campos.length) * 100 + "%";
+  const preenchidos = campos.filter(id => document.getElementById(id).value).length;
+  progressBar.style.width = (preenchidos / campos.length) * 100 + "%";
 }
 
+/* transição */
 function mostrarFormulario() {
   intro.classList.add("fade-out");
+  formulario.classList.add("ativo");
+
   setTimeout(() => {
-    intro.style.display = "none";
-    formulario.style.display = "block";
-    setTimeout(() => card.style.opacity = 1, 50); // card sobe suavemente
-  }, 1200);
+    card.style.transform = "translateY(0)";
+    card.style.opacity = "1";
+  }, 120);
 }
 
+/* localização */
 function capturarLocalizacao() {
   navigator.geolocation.getCurrentPosition(async pos => {
     latitude = pos.coords.latitude;
     longitude = pos.coords.longitude;
 
-    const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`);
-    const data = await res.json();
-    endereco = data.display_name || "";
+    const r = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`);
+    const d = await r.json();
+    endereco = d.display_name || "";
 
     btnLoc.textContent = "Localização capturada ✅";
-    btnLoc.classList.add("sucesso");
+    btnLoc.style.background = "#2e7d32";
     localizacao.innerText = endereco;
   });
 }
 
+/* câmera */
 camera.addEventListener("change", e => {
   const r = new FileReader();
-  r.onload = () => {
-    fotoBase64 = r.result;
-    statusFoto.textContent = "Imagem salva ✅";
-  };
+  r.onload = () => fotoBase64 = r.result;
   r.readAsDataURL(e.target.files[0]);
 });
 
-function abrirCamera() {
-  camera.click();
-}
-
+/* envio */
 function enviar() {
-  btnEnviar.textContent = "Enviando...";
-  btnEnviar.disabled = true;
-
   fetch(API_URL, {
     method: "POST",
     body: JSON.stringify({
@@ -306,21 +283,11 @@ function enviar() {
       endereco: endereco,
       fotoBase64: fotoBase64
     })
-  })
-  .then(r => r.json())
-  .then(() => {
-    status.textContent = "Visita confirmada ✅";
-    card.innerHTML += `<div class="final">
-      <div class="check">✅</div>
-      <h2>Visita registrada</h2>
-      <p>Dados enviados com sucesso</p>
-      <button onclick="window.close()">Finalizar</button>
-    </div>`;
-  })
-  .catch(() => {
-    btnEnviar.textContent = "Erro ao enviar";
-    btnEnviar.disabled = false;
   });
+}
+
+function abrirCamera() {
+  camera.click();
 }
 </script>
 
