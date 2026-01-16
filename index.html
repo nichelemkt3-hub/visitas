@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Validação de Visita</title>
-
 <style>
 html, body {
   margin: 0;
@@ -15,7 +14,6 @@ html, body {
   background-size: 200% 200%;
   animation: bgMove 18s ease infinite;
 }
-
 @keyframes bgMove {
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
@@ -30,42 +28,63 @@ html, body {
   align-items: center;
   transition: opacity 1.2s ease, filter 1.2s ease;
 }
-
 #intro.fade-out {
   opacity: 0;
   filter: blur(14px);
   pointer-events: none;
 }
-
 #intro button {
-  font-size: 18px;
-  padding: 14px 28px;
+  font-size: 16px;       /* diminuiu */
+  padding: 10px 22px;    /* diminuiu */
   background: #6a1b9a;
   color: #fff;
   border: none;
   border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.3s;
 }
+#intro button:hover { background: #4a148c; }
 
+/* --- FORMULÁRIO --- */
 #formulario {
   display: none;
   padding: 40px 20px 60px;
+  min-height: 100vh;
+
+  /* IMAGEM DE FUNDO */
+  background-image: url("fundonicheletintas.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  position: relative;
+
   opacity: 0;
   filter: blur(14px);
-  transform: translateY(14px);
+  transform: translateY(60px); /* inicia baixo */
   transition: all 1.6s ease;
 }
-
 #formulario.ativo {
   opacity: 1;
   filter: blur(0);
   transform: translateY(0);
 }
 
+/* overlay para destacar card */
+#formulario::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.25);
+  z-index: 0;
+}
+
 .card {
+  position: relative;
+  z-index: 1;
   background: #fff;
   max-width: 380px;
-  margin: 0 auto;
-  padding: 28px 24px 32px;
+  margin: 60px auto;  /* mais espaçamento */
+  padding: 84px 24px 96px; /* 3x vertical */
   border-radius: 20px;
   box-shadow: 0 18px 45px rgba(0,0,0,0.25);
   text-align: left;
@@ -78,7 +97,6 @@ html, body {
   overflow: hidden;
   margin-bottom: 16px;
 }
-
 .progress span {
   display: block;
   height: 100%;
@@ -109,18 +127,24 @@ button {
   border: none;
   margin-top: 16px;
   font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s;
 }
-
+button:hover { background: #4a148c; }
 button.sucesso { background: #2e7d32; }
 button:disabled { opacity: 0.7; }
 
 .final {
   text-align: center;
 }
-
 .final .check {
   font-size: 56px;
   color: #2e7d32;
+}
+
+/* igualando espaçamento entre botões de ação */
+#btnLoc, #btnFoto, #btnEnviar {
+  margin-top: 16px;
 }
 </style>
 </head>
@@ -173,7 +197,7 @@ button:disabled { opacity: 0.7; }
     <button id="btnLoc" onclick="capturarLocalizacao()">📍 Capturar Localização</button>
     <p id="localizacao"></p>
 
-    <button onclick="abrirCamera()">📸 Tirar Foto</button>
+    <button id="btnFoto" onclick="abrirCamera()">📸 Tirar Foto</button>
     <input type="file" id="camera" hidden accept="image/*" capture="environment">
 
     <button id="btnEnviar" onclick="enviar()">✅ Confirmar Visita</button>
@@ -185,12 +209,15 @@ let latitude, longitude, endereco = "", fotoBase64 = null;
 
 const API_URL = "https://script.google.com/macros/s/AKfycbw3kM0KukrHTN_c0K0fQQXJAKFxBFVd4EmOyuopHBsmrac9agIgrBZvWxzUnIdo_xzG9w/exec";
 
-const campos = ["vendedor","codigoVendedor","loja","tipoCliente","statusVisita","observacoes"];
+const campos = ["vendedor","codigoVendedor","loja","tipoCliente","statusVisita"];
 campos.forEach(id => document.getElementById(id).addEventListener("input", atualizarProgresso));
 
+let progressoExtra = 0;
 function atualizarProgresso() {
-  const p = campos.filter(id => document.getElementById(id).value).length;
-  progressBar.style.width = (p / campos.length) * 100 + "%";
+  let preenchidos = campos.filter(id => document.getElementById(id).value).length;
+  let total = campos.length + 2; // +2 = localização + foto
+  let porcentagem = ((preenchidos + progressoExtra)/total)*100;
+  document.getElementById("progressBar").style.width = porcentagem + "%";
 }
 
 function mostrarFormulario() {
@@ -211,31 +238,40 @@ function capturarLocalizacao() {
     const data = await res.json();
     endereco = data.display_name || "";
 
-    btnLoc.textContent = "Localização capturada ✅";
-    btnLoc.classList.add("sucesso");
-    localizacao.innerText = endereco;
+    document.getElementById("btnLoc").textContent = "Localização capturada ✅";
+    document.getElementById("btnLoc").classList.add("sucesso");
+    document.getElementById("localizacao").innerText = endereco;
+
+    progressoExtra++; atualizarProgresso();
   });
 }
 
-camera.addEventListener("change", e => {
-  const r = new FileReader();
-  r.onload = () => fotoBase64 = r.result;
-  r.readAsDataURL(e.target.files[0]);
+function abrirCamera() {
+  document.getElementById("camera").click();
+}
+document.getElementById("camera").addEventListener("change", e => {
+  const reader = new FileReader();
+  reader.onload = () => {
+    fotoBase64 = reader.result;
+    progressoExtra++; atualizarProgresso();
+  };
+  reader.readAsDataURL(e.target.files[0]);
 });
 
 function enviar() {
+  const btnEnviar = document.getElementById("btnEnviar");
   btnEnviar.textContent = "Enviando...";
   btnEnviar.disabled = true;
 
   fetch(API_URL, {
     method: "POST",
     body: JSON.stringify({
-      vendedor: vendedor.value,
-      codigoVendedor: codigoVendedor.value,
-      loja: loja.value,
-      tipoCliente: tipoCliente.value,
-      statusVisita: statusVisita.value,
-      observacoes: observacoes.value,
+      vendedor: document.getElementById("vendedor").value,
+      codigoVendedor: document.getElementById("codigoVendedor").value,
+      loja: document.getElementById("loja").value,
+      tipoCliente: document.getElementById("tipoCliente").value,
+      statusVisita: document.getElementById("statusVisita").value,
+      observacoes: document.getElementById("observacoes").value,
       lat: latitude,
       lng: longitude,
       endereco: endereco,
@@ -244,7 +280,7 @@ function enviar() {
   })
   .then(r => r.json())
   .then(() => {
-    card.innerHTML = `
+    document.getElementById("card").innerHTML = `
       <div class="final">
         <div class="check">✅</div>
         <h2>Visita registrada</h2>
