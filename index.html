@@ -77,7 +77,7 @@ html, body {
 #fundo-baixo {
   top: 50%;
   height: 50%;
-  background: url('baixo.png') no-repeat bottom center;
+  background: url('baixo.png') no-repeat top center;
   background-size: cover;
 }
 
@@ -157,18 +157,6 @@ button {
 }
 </style>
 </head>
-
- <!-- Manifest PWA -->
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#1a73e8">
-
-<!-- Service Worker -->
-<script>
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('sw.js');
-  }
-</script>
- 
 
 <body>
 
