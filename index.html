@@ -55,19 +55,11 @@ html, body {
   min-height: 100vh;
   width: 100%;
 
-  /* 🔹 FUNDO COM DUAS IMAGENS CONTÍNUAS */
-  background-image: 
-    url("topo.png"),
-    url("baixo.png");
-  background-repeat: 
-    no-repeat,
-    no-repeat;
-  background-position: 
-    top,
-    bottom;
-  background-size: 
-    100% auto,
-    100% auto;
+  /* 🔹 FUNDO COM DUAS IMAGENS CONTÍNUAS SEM GAP */
+  background-image: url("topo.png"), url("baixo.png");
+  background-repeat: no-repeat, no-repeat;
+  background-position: top, bottom;
+  background-size: 100% auto, 100% auto;
 
   display: flex;
   justify-content: center;
@@ -77,6 +69,13 @@ html, body {
   padding-bottom: 60px;
 
   transition: opacity 1.8s ease;
+}
+
+@media (max-width: 768px) {
+  #formulario {
+    background-size: 100% auto, 100% auto;
+    background-position: top 0px, top 100%;
+  }
 }
 
 #formulario.ativo {
