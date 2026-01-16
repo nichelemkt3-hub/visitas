@@ -36,7 +36,6 @@ html, body {
   font-size: 16px;
   padding: 12px 26px;
   max-width: 220px;
-  width: auto;
   background: #6a1b9a;
   color: #fff;
   border: none;
@@ -51,16 +50,28 @@ html, body {
   min-height: 100vh;
   width: 100%;
 
-  background-image: url("fundonicheletintas.png");
-  background-repeat: no-repeat;
-  background-position: center top;
-  background-size: 105%; /* 🔹 imagem um pouco menor */
+  /* 🔹 FUNDO COM DUAS IMAGENS */
+  background-image: 
+    url("topo.png"),
+    url("baixo.png");
+
+  background-repeat: 
+    no-repeat,
+    repeat-y;
+
+  background-position: 
+    center top,
+    center top;
+
+  background-size: 
+    105% auto,
+    105% auto;
 
   display: flex;
   justify-content: center;
   align-items: flex-start;
 
-  padding-top: 90px; /* espaço da logo */
+  padding-top: 90px;
   padding-bottom: 60px;
 
   transition: opacity 2.2s ease;
@@ -74,7 +85,7 @@ html, body {
 /* ================= CARD ================= */
 .card {
   background: #fff;
-  width: 78%;              /* 🔹 mais espaço nas laterais */
+  width: 78%;
   max-width: 300px;
   padding: 38px 26px 40px;
   border-radius: 22px;
