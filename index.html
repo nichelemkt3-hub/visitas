@@ -56,25 +56,18 @@ html, body {
     url("topo.png"),
     url("baixo.png");
 
-  background-repeat: 
-    no-repeat,
-    no-repeat;
+  background-repeat: no-repeat, no-repeat;
 
-  background-position: 
-    top,
-    bottom;
-
-  background-size: 
-    100% auto,
-    100% auto;
+  /* topo.png no topo, baixo.png logo abaixo, sem espaço */
+  background-position: top, bottom;
+  background-size: 100% auto, 100% auto;
 
   display: flex;
   justify-content: center;
   align-items: flex-start;
 
   padding-top: 90px;
-  padding-bottom: 90px; /* igual ao topo para manter equilíbrio */
-
+  padding-bottom: 90px; /* mesmo espaço que topo */
   transition: opacity 2.2s ease;
 }
 
