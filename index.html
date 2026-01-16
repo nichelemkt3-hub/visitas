@@ -10,24 +10,20 @@
     margin: 0;
     padding: 0;
     font-family: Arial, sans-serif;
-    height: 100%;
+    min-height: 100%;
     background: linear-gradient(180deg, #6a1b9a, #9c27b0, #ffca28);
     color: #333;
   }
 
   body {
-    display: flex;
-    align-items: center;
-    justify-content: center;
     text-align: center;
   }
 
   /* --- TELA INICIAL --- */
   #intro {
-    position: absolute;
+    position: fixed;
     inset: 0;
     display: flex;
-    flex-direction: column;
     justify-content: center;
     align-items: center;
     background: inherit;
@@ -41,36 +37,25 @@
     color: #fff;
     border: none;
     border-radius: 10px;
-    transition: background 0.3s;
-    width: auto;
     max-width: 260px;
-  }
-
-  #intro button:hover {
-    background: #4a148c;
   }
 
   /* --- FORMULÁRIO --- */
   #formulario {
     display: none;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-    min-height: 100vh;
-    background: inherit;
-    padding-top: 40px;
+    padding: 40px 16px 60px;
     box-sizing: border-box;
   }
 
   .card {
     background: #fff;
-    max-width: 420px; /* reduzido */
-    width: 88%;
-    padding: 36px 28px;
-    border-radius: 16px;
+    max-width: 380px; /* MAIS ESTREITO */
+    width: 100%;
+    margin: 0 auto; /* centraliza */
+    padding: 32px 24px;
+    border-radius: 18px;
     box-shadow: 0 15px 40px rgba(0,0,0,0.25);
     text-align: left;
-    margin-bottom: 40px;
   }
 
   h2 {
@@ -79,20 +64,16 @@
     margin-bottom: 20px;
   }
 
-  .card-content {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-
   label {
     font-weight: bold;
-    margin-top: 12px;
+    margin-top: 14px;
+    display: block;
   }
 
   input, select, textarea, button {
     width: 100%;
     padding: 12px;
+    margin-top: 6px;
     border-radius: 8px;
     border: 1px solid #ccc;
     font-size: 15px;
@@ -107,11 +88,10 @@
     background: #6a1b9a;
     color: #fff;
     border: none;
-    margin-top: 15px;
+    margin-top: 16px;
     font-weight: bold;
     cursor: pointer;
     font-size: 16px;
-    transition: background 0.3s;
   }
 
   button:hover {
@@ -119,14 +99,14 @@
   }
 
   #status {
-    font-size: 14px;
-    margin-top: 10px;
+    margin-top: 16px;
     text-align: center;
+    font-size: 14px;
   }
 
-  img#preview {
-    max-width: 100%;
+  #preview {
     margin-top: 10px;
+    width: 100%;
     border-radius: 8px;
   }
 </style>
@@ -143,53 +123,51 @@
   <div class="card">
     <h2>Validação de Visita</h2>
 
-    <div class="card-content">
-      <label>Vendedor</label>
-      <input id="vendedor">
+    <label>Vendedor</label>
+    <input id="vendedor">
 
-      <label>Código do Vendedor</label>
-      <input id="codigoVendedor">
+    <label>Código do Vendedor</label>
+    <input id="codigoVendedor">
 
-      <label>Loja</label>
-      <select id="loja">
-        <option value="">Selecione</option>
-        <option>Água Verde</option>
-        <option>Portão</option>
-        <option>Sprada</option>
-      </select>
+    <label>Loja</label>
+    <select id="loja">
+      <option value="">Selecione</option>
+      <option>Água Verde</option>
+      <option>Portão</option>
+      <option>Sprada</option>
+    </select>
 
-      <label>Tipo de Cliente</label>
-      <select id="tipoCliente">
-        <option value="">Selecione</option>
-        <option>Obra ativa</option>
-        <option>Pintor profissional</option>
-        <option>Cliente corporativo</option>
-        <option>Cliente loja</option>
-      </select>
+    <label>Tipo de Cliente</label>
+    <select id="tipoCliente">
+      <option value="">Selecione</option>
+      <option>Obra ativa</option>
+      <option>Pintor profissional</option>
+      <option>Cliente corporativo</option>
+      <option>Cliente loja</option>
+    </select>
 
-      <label>Status da Visita</label>
-      <select id="statusVisita">
-        <option value="">Selecione</option>
-        <option>Prospecção</option>
-        <option>Orçamento</option>
-        <option>Negociação</option>
-        <option>Fechado</option>
-        <option>Sem interesse</option>
-      </select>
+    <label>Status da Visita</label>
+    <select id="statusVisita">
+      <option value="">Selecione</option>
+      <option>Prospecção</option>
+      <option>Orçamento</option>
+      <option>Negociação</option>
+      <option>Fechado</option>
+      <option>Sem interesse</option>
+    </select>
 
-      <label>Observações</label>
-      <textarea id="observacoes" rows="3"></textarea>
+    <label>Observações</label>
+    <textarea id="observacoes" rows="3"></textarea>
 
-      <button onclick="capturarLocalizacao()">📍 Capturar Localização</button>
-      <p id="localizacao"></p>
+    <button onclick="capturarLocalizacao()">📍 Capturar Localização</button>
+    <p id="localizacao"></p>
 
-      <button onclick="abrirCamera()">📸 Tirar Foto</button>
-      <input type="file" id="camera" accept="image/*" capture="environment" hidden>
-      <img id="preview">
+    <button onclick="abrirCamera()">📸 Tirar Foto</button>
+    <input type="file" id="camera" accept="image/*" capture="environment" hidden>
+    <img id="preview">
 
-      <button onclick="enviar()">✅ Confirmar Visita</button>
-      <p id="status"></p>
-    </div>
+    <button onclick="enviar()">✅ Confirmar Visita</button>
+    <p id="status"></p>
   </div>
 </div>
 
@@ -200,19 +178,8 @@ let fotoBase64 = null;
 const API_URL = "https://script.google.com/macros/s/AKfycbw3kM0KukrHTN_c0K0fQQXJAKFxBFVd4EmOyuopHBsmrac9agIgrBZvWxzUnIdo_xzG9w/exec";
 
 function mostrarFormulario() {
-  const intro = document.getElementById("intro");
-  const form = document.getElementById("formulario");
-
-  intro.style.transition = "opacity 1s";
-  intro.style.opacity = 0;
-
-  setTimeout(() => {
-    intro.style.display = "none";
-    form.style.display = "flex";
-    form.style.opacity = 0;
-    form.style.transition = "opacity 1s";
-    setTimeout(() => form.style.opacity = 1, 50);
-  }, 1000);
+  document.getElementById("intro").style.display = "none";
+  document.getElementById("formulario").style.display = "block";
 }
 
 function capturarLocalizacao() {
@@ -220,24 +187,23 @@ function capturarLocalizacao() {
     latitude = pos.coords.latitude;
     longitude = pos.coords.longitude;
 
-    const geoUrl = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`;
-    const res = await fetch(geoUrl);
+    const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`);
     const data = await res.json();
-    endereco = data.display_name || "Endereço não encontrado";
+    endereco = data.display_name || "";
 
     document.getElementById("localizacao").innerText = endereco;
-  }, () => alert("Erro ao obter localização"));
+  });
 }
 
 function abrirCamera() {
   document.getElementById("camera").click();
 }
 
-document.getElementById("camera").addEventListener("change", e => {
+camera.addEventListener("change", e => {
   const reader = new FileReader();
   reader.onload = () => {
     fotoBase64 = reader.result;
-    document.getElementById("preview").src = fotoBase64;
+    preview.src = fotoBase64;
   };
   reader.readAsDataURL(e.target.files[0]);
 });
@@ -259,19 +225,11 @@ function enviar() {
       observacoes: observacoes.value,
       lat: latitude,
       lng: longitude,
-      endereco: endereco,
-      fotoBase64: fotoBase64
+      endereco,
+      fotoBase64
     })
-  })
-  .then(r => r.json())
-  .then(() => {
-    document.getElementById("status").innerHTML = `
-      <strong>Visita confirmada!</strong><br><br>
-      <button onclick="window.close()">Fechar pesquisa</button>
-    `;
-  })
-  .catch(() => {
-    document.getElementById("status").innerText = "Erro ao enviar dados";
+  }).then(() => {
+    status.innerHTML = "<strong>Visita confirmada!</strong>";
   });
 }
 </script>
