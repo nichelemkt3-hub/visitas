@@ -50,20 +50,19 @@ html, body {
   min-height: 100vh;
   width: 100%;
 
-  /* 🔹 FUNDO COM DUAS IMAGENS */
-  background-image: 
+  background-image:
     url("topo.png"),
     url("baixo.png");
 
-  background-repeat: 
+  background-repeat:
     no-repeat,
     repeat-y;
 
-  background-position: 
+  background-position:
     center top,
     center top;
 
-  background-size: 
+  background-size:
     105% auto,
     105% auto;
 
@@ -147,9 +146,11 @@ button {
   transition: width 0.4s ease;
 }
 
-#localizacao {
-  font-size: 13px;
+.status-ok {
+  font-size: 14px;
+  color: #2e7d32;
   margin-top: 6px;
+  display: none;
 }
 </style>
 </head>
@@ -207,12 +208,13 @@ button {
     <textarea id="observacoes" rows="3"></textarea>
 
     <button id="btnLoc" onclick="capturarLocalizacao()">📍 Capturar Localização</button>
-    <p id="localizacao"></p>
 
     <button onclick="abrirCamera()">📸 Tirar Foto</button>
     <input type="file" id="camera" hidden accept="image/*" capture="environment">
+    <p id="statusFoto" class="status-ok">✅ Imagem salva</p>
 
     <button id="btnEnviar" onclick="enviar()">✅ Confirmar Visita</button>
+    <p id="statusEnvio" class="status-ok">✅ Visita confirmada</p>
   </div>
 </div>
 
@@ -245,24 +247,22 @@ function mostrarFormulario() {
 
 /* localização */
 function capturarLocalizacao() {
-  navigator.geolocation.getCurrentPosition(async pos => {
+  navigator.geolocation.getCurrentPosition(pos => {
     latitude = pos.coords.latitude;
     longitude = pos.coords.longitude;
 
-    const r = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`);
-    const d = await r.json();
-    endereco = d.display_name || "";
-
     btnLoc.textContent = "Localização capturada ✅";
     btnLoc.style.background = "#2e7d32";
-    localizacao.innerText = endereco;
   });
 }
 
 /* câmera */
 camera.addEventListener("change", e => {
   const r = new FileReader();
-  r.onload = () => fotoBase64 = r.result;
+  r.onload = () => {
+    fotoBase64 = r.result;
+    document.getElementById("statusFoto").style.display = "block";
+  };
   r.readAsDataURL(e.target.files[0]);
 });
 
@@ -282,6 +282,9 @@ function enviar() {
       endereco: endereco,
       fotoBase64: fotoBase64
     })
+  })
+  .then(() => {
+    document.getElementById("statusEnvio").style.display = "block";
   });
 }
 
