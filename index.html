@@ -53,27 +53,36 @@
   }
 
   /* Fundo topo e baixo contínuo */
-  #fundo-topo {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 50%; /* metade da tela */
-    background: url('topo.png') no-repeat top center;
-    background-size: cover;
-    z-index: 0;
-  }
+  background-image: 
+    url("topo.png"),
+    url("baixo.png");
 
-  #fundo-baixo {
-    position: absolute;
-    top: 50%; /* começa exatamente onde topo termina */
-    left: 0;
-    width: 100%;
-    height: 50%; /* metade inferior */
-    background: url('baixo.png') no-repeat bottom center;
-    background-size: cover;
-    z-index: 0;
-  }
+  background-repeat: 
+    no-repeat,
+    repeat-y;
+
+  background-position: 
+    center top,
+    center top;
+
+  background-size: 
+    105% auto,
+    105% auto;
+
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+
+  padding-top: 90px;
+  padding-bottom: 60px;
+
+  transition: opacity 2.2s ease;
+}
+
+#formulario.ativo {
+  opacity: 1;
+  pointer-events: auto;
+}
 
   /* Container do card */
   .card-container {
