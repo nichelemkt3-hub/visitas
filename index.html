@@ -3,258 +3,276 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Validação de Visitas – Nichele Tintas</title>
-
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#1a73e8">
+<title>Validação de Visitas</title>
 
 <style>
-  html, body {
-    margin: 0;
-    padding: 0;
-    font-family: Arial, sans-serif;
-    min-height: 100%;
-    background: #ffffff;
-  }
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  min-height: 100%;
+  background: #fff;
+}
 
-  /* --- PRIMEIRA TELA --- */
-  #intro {
-    position: fixed;
-    inset: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: url("capa.png") no-repeat center top;
-    background-size: cover;
-    transition: opacity 1.5s ease, filter 1.5s ease;
-  }
+#intro {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: url('capa.png') no-repeat center center;
+  background-size: cover;
+  transition: opacity 1.8s ease;
+}
 
-  #intro.fade-out {
-    opacity: 0;
-    filter: blur(12px);
-    pointer-events: none;
-  }
+#intro button {
+  font-size: 18px;
+  padding: 14px 28px;
+  border-radius: 12px;
+  border: none;
+  background: #6a1b9a;
+  color: #fff;
+  max-width: 70%;  /* largura menor e centralizada */
+  cursor: pointer;
+}
 
-  #intro button {
-    font-size: 20px;
-    padding: 14px 28px;
-    background: linear-gradient(120deg,#6a1b9a,#9c27b0,#ffca28);
-    color: #fff;
-    border: none;
-    border-radius: 12px;
-    cursor: pointer;
-  }
+#intro.fade-out {
+  opacity: 0;
+  pointer-events: none;
+}
 
-  /* --- SEGUNDA TELA --- */
-  #formulario {
-    display: none;
-    min-height: 100vh;
-    background-color: #ffffff;
-    background-image: url("topo.png"), url("baixo.png");
-    background-repeat: no-repeat, no-repeat;
-    background-position: top center, bottom center;
-    background-size: cover, cover;
-    padding: 40px 16px 80px;
-    box-sizing: border-box;
-  }
+#formulario {
+  display: none;
+  min-height: 100vh;
+  position: relative;
+  background-color: #fff;
+}
 
-  #formulario.ativo {
-    animation: slideUp 1.5s ease forwards;
-  }
+#formulario .fundo-topo {
+  background: url('topo.png') no-repeat top center;
+  background-size: cover;
+  height: 40vh;
+}
 
-  @keyframes slideUp {
-    from { opacity:0; transform: translateY(100px); }
-    to { opacity:1; transform: translateY(0); }
-  }
+#formulario .fundo-baixo {
+  background: url('baixo.png') no-repeat bottom center;
+  background-size: cover;
+  height: 30vh;
+}
 
-  .card {
-    max-width: 380px;
-    margin: 0 auto;
-    padding: 28px 24px 32px;
-    border-radius: 20px;
-    box-shadow: 0 18px 45px rgba(0,0,0,0.25);
-    background: rgba(255,255,255,0.95);
-    text-align: left;
-  }
+.card-container {
+  position: absolute;
+  top: 40px; /* deixa espaço para logo da imagem topo */
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  z-index: 2;
+}
 
-  .card h2 {
-    text-align: center;
-    margin-bottom: 12px;
-    color: #6a1b9a;
-  }
+.card {
+  background: #fff;
+  max-width: 380px;
+  width: 90%;
+  padding: 28px 24px 32px;
+  border-radius: 20px;
+  box-shadow: 0 18px 45px rgba(0,0,0,0.25);
+  text-align: left;
+  opacity: 0;
+  transform: translateY(40px);
+  transition: all 1.6s ease;
+}
 
-  .card .titulo-visitas {
-    text-align: center;
-    font-weight: bold;
-    margin-bottom: 16px;
-    font-size: 18px;
-    color: #333;
-  }
+.card.ativo {
+  opacity: 1;
+  transform: translateY(0);
+}
 
-  .progress {
-    height: 4px;
-    background: #e0e0e0;
-    border-radius: 4px;
-    overflow: hidden;
-    margin-bottom: 16px;
-  }
+/* --- Barra de progresso --- */
+.progress {
+  height: 4px;
+  background: #e0e0e0;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 12px;
+}
 
-  .progress span {
-    display: block;
-    height: 100%;
-    width: 0%;
-    background: #2e7d32;
-    transition: width 0.4s ease;
-  }
+.progress span {
+  display: block;
+  height: 100%;
+  width: 0%;
+  background: #2e7d32;
+  transition: width 0.4s ease;
+}
 
-  label { font-weight: bold; margin-top: 14px; display:block; }
-  input, select, textarea, button {
-    width: 100%;
-    padding: 12px;
-    margin-top: 6px;
-    border-radius: 10px;
-    border: 1px solid #ccc;
-    font-size: 15px;
-    box-sizing: border-box;
-  }
+label {
+  font-weight: bold;
+  margin-top: 14px;
+  display: block;
+}
 
-  textarea { resize: vertical; }
+input, select, textarea, button {
+  width: 100%;
+  padding: 12px;
+  margin-top: 6px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  font-size: 15px;
+  box-sizing: border-box;
+}
 
-  button {
-    background: #6a1b9a;
-    color: #fff;
-    border: none;
-    margin-top: 16px;
-    font-weight: bold;
-    cursor: pointer;
-  }
+button {
+  background: #6a1b9a;
+  color: #fff;
+  border: none;
+  margin-top: 16px;
+  font-weight: bold;
+}
 
-  button.sucesso { background: #2e7d32; }
-  button:disabled { opacity: 0.7; }
+button.sucesso { background: #2e7d32; }
+button:disabled { opacity: 0.7; }
 
-  #localizacao, #statusFoto, #statusVisita { margin-top: 8px; font-size: 14px; color:#333; }
+.final {
+  text-align: center;
+}
 
-  img#preview { max-width: 100%; margin-top: 10px; border-radius: 12px; }
+.final .check {
+  font-size: 56px;
+  color: #2e7d32;
+}
 
+.visitas-externas {
+  text-align: center;
+  font-weight: bold;
+  margin-bottom: 12px;
+  font-size: 18px;
+  color: #6a1b9a;
+}
 </style>
 </head>
 <body>
 
-<!-- TELA INICIAL -->
+<!-- PRIMEIRA TELA -->
 <div id="intro">
   <button onclick="mostrarFormulario()">Acessar Questionário</button>
 </div>
 
-<!-- FORMULÁRIO -->
+<!-- SEGUNDA TELA -->
 <div id="formulario">
-  <div class="card" id="card">
-    <div class="titulo-visitas">Visitas Externas</div>
-    <div class="progress"><span id="progressBar"></span></div>
+  <div class="fundo-topo"></div>
 
-    <label>Vendedor</label>
-    <input id="vendedor">
+  <div class="card-container">
+    <div class="card" id="card">
+      <div class="visitas-externas">Visitas Externas</div>
+      <div class="progress"><span id="progressBar"></span></div>
 
-    <label>Código do Vendedor</label>
-    <input id="codigoVendedor">
+      <label>Vendedor</label>
+      <input id="vendedor">
 
-    <label>Loja</label>
-    <select id="loja">
-      <option value="">Selecione</option>
-      <option>Água Verde</option>
-      <option>Portão</option>
-      <option>Sprada</option>
-    </select>
+      <label>Código do Vendedor</label>
+      <input id="codigoVendedor">
 
-    <label>Tipo de Cliente</label>
-    <select id="tipoCliente">
-      <option value="">Selecione</option>
-      <option>Obra ativa</option>
-      <option>Pintor profissional</option>
-      <option>Cliente corporativo</option>
-      <option>Cliente loja</option>
-    </select>
+      <label>Loja</label>
+      <select id="loja">
+        <option value="">Selecione</option>
+        <option>Água Verde</option>
+        <option>Portão</option>
+        <option>Sprada</option>
+      </select>
 
-    <label>Status da Visita</label>
-    <select id="statusVisita">
-      <option value="">Selecione</option>
-      <option>Prospecção</option>
-      <option>Orçamento</option>
-      <option>Negociação</option>
-      <option>Fechado</option>
-      <option>Sem interesse</option>
-    </select>
+      <label>Tipo de Cliente</label>
+      <select id="tipoCliente">
+        <option value="">Selecione</option>
+        <option>Obra ativa</option>
+        <option>Pintor profissional</option>
+        <option>Cliente corporativo</option>
+        <option>Cliente loja</option>
+      </select>
 
-    <label>Observações</label>
-    <textarea id="observacoes"></textarea>
+      <label>Status da Visita</label>
+      <select id="statusVisita">
+        <option value="">Selecione</option>
+        <option>Prospecção</option>
+        <option>Orçamento</option>
+        <option>Negociação</option>
+        <option>Fechado</option>
+        <option>Sem interesse</option>
+      </select>
 
-    <button id="btnLoc" onclick="capturarLocalizacao()">📍 Capturar Localização</button>
-    <p id="localizacao"></p>
+      <label>Observações</label>
+      <textarea id="observacoes"></textarea>
 
-    <button onclick="abrirCamera()">📸 Tirar Foto</button>
-    <input type="file" id="camera" hidden accept="image/*" capture="environment">
-    <p id="statusFoto"></p>
-    <img id="preview">
+      <button id="btnLoc" onclick="capturarLocalizacao()">📍 Capturar Localização</button>
+      <p id="localizacao"></p>
 
-    <button id="btnEnviar" onclick="enviar()">✅ Confirmar Visita</button>
-    <p id="statusVisita"></p>
+      <button onclick="abrirCamera()">📸 Tirar Foto</button>
+      <input type="file" id="camera" hidden accept="image/*" capture="environment">
+
+      <button id="btnEnviar" onclick="enviar()">✅ Confirmar Visita</button>
+      <p id="statusFoto"></p>
+      <p id="status"></p>
+    </div>
   </div>
+
+  <div class="fundo-baixo"></div>
 </div>
 
 <script>
 let latitude, longitude, endereco = "", fotoBase64 = null;
 const API_URL = "https://script.google.com/macros/s/AKfycbw3kM0KukrHTN_c0K0fQQXJAKFxBFVd4EmOyuopHBsmrac9agIgrBZvWxzUnIdo_xzG9w/exec";
 
-// Progress
+// --- Transição ---
+function mostrarFormulario() {
+  intro.classList.add('fade-out');
+  setTimeout(() => {
+    intro.style.display = 'none';
+    formulario.style.display = 'block';
+    const card = document.getElementById('card');
+    setTimeout(() => card.classList.add('ativo'), 100);
+  }, 1800);
+}
+
+// --- Progress Bar ---
 const campos = ["vendedor","codigoVendedor","loja","tipoCliente","statusVisita"];
 campos.forEach(id => document.getElementById(id).addEventListener("input", atualizarProgresso));
 
 function atualizarProgresso() {
-  const preenchidos = campos.filter(id => document.getElementById(id).value).length;
-  document.getElementById("progressBar").style.width = (preenchidos / campos.length) * 100 + "%";
+  const p = campos.filter(id => document.getElementById(id).value).length;
+  progressBar.style.width = (p / campos.length) * 100 + "%";
 }
 
-// Transição primeira tela → formulário
-function mostrarFormulario() {
-  intro.classList.add("fade-out");
-  setTimeout(() => {
-    intro.style.display = "none";
-    formulario.style.display = "block";
-    setTimeout(() => formulario.classList.add("ativo"), 50);
-  }, 1500);
-}
-
-// Localização
+// --- Localização ---
 function capturarLocalizacao() {
   navigator.geolocation.getCurrentPosition(async pos => {
     latitude = pos.coords.latitude;
     longitude = pos.coords.longitude;
+
     const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`);
     const data = await res.json();
     endereco = data.display_name || "";
+
     btnLoc.textContent = "Localização capturada ✅";
     btnLoc.classList.add("sucesso");
     localizacao.innerText = endereco;
-    atualizarProgresso();
-  }, ()=> alert("Erro ao capturar localização"));
+  });
 }
 
-// Câmera
+// --- Câmera ---
 camera.addEventListener("change", e => {
-  const reader = new FileReader();
-  reader.onload = () => {
-    fotoBase64 = reader.result;
-    preview.src = fotoBase64;
-    statusFoto.textContent = "Imagem salva ✅";
+  const r = new FileReader();
+  r.onload = () => {
+    fotoBase64 = r.result;
+    statusFoto.innerText = "Imagem salva ✅";
   };
-  reader.readAsDataURL(e.target.files[0]);
+  r.readAsDataURL(e.target.files[0]);
 });
 
-function abrirCamera() { camera.click(); }
+function abrirCamera() {
+  camera.click();
+}
 
-// Enviar
+// --- Envio ---
 function enviar() {
-  if (!latitude || !fotoBase64) { alert("Falta localização ou foto"); return; }
-
   btnEnviar.textContent = "Enviando...";
   btnEnviar.disabled = true;
 
@@ -273,24 +291,14 @@ function enviar() {
       fotoBase64: fotoBase64
     })
   })
-  .then(r=>r.json())
-  .then(()=>{
-    statusVisita.textContent = "✅ Visita confirmada";
-    btnEnviar.textContent = "Confirmar Visita";
-    btnEnviar.disabled = false;
+  .then(r => r.json())
+  .then(() => {
+    status.innerText = "Visita confirmada ✅";
+    card.innerHTML += `<div class="final"><div class="check">✅</div><h2>Visita registrada</h2></div>`;
   })
-  .catch(()=>{
+  .catch(() => {
     btnEnviar.textContent = "Erro ao enviar";
     btnEnviar.disabled = false;
-  });
-}
-
-// Service Worker
-if("serviceWorker" in navigator){
-  window.addEventListener("load", ()=> {
-    navigator.serviceWorker.register("service-worker.js")
-      .then(reg=>console.log("SW registrado", reg))
-      .catch(err=>console.log("SW falhou", err));
   });
 }
 </script>
