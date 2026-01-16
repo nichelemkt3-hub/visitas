@@ -46,17 +46,17 @@ html, body {
   width: 100%;
   text-align: center;
 
-  /* IMAGEM DE FUNDO no tamanho que deu certo */
+  /* IMAGEM DE FUNDO ajustada ao tamanho que funcionou antes */
   background-image: url("fundonicheletintas.png");
-  background-size: auto 100%;    /* altura total, largura proporcional */
-  background-position: center top;  
+  background-size: contain;      /* mantém proporção da imagem */
+  background-position: top center;
   background-repeat: no-repeat;
 
   display: flex;
   justify-content: center;
   align-items: flex-start; 
-  padding-top: 180px; /* espaço topo para logo da imagem */
-  padding-bottom: 80px; 
+  padding-top: 200px; /* espaço superior maior para logo da imagem */
+  padding-bottom: 60px; 
   box-sizing: border-box;
 }
 
