@@ -11,13 +11,12 @@
     padding: 0;
     font-family: Arial, sans-serif;
     height: 100%;
-    background: linear-gradient(180deg, #6a1b9a, #9c27b0, #ffca28); /* degradê de cima para baixo */
+    background: linear-gradient(180deg, #6a1b9a, #9c27b0, #ffca28);
     color: #333;
   }
 
   body {
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
     text-align: center;
@@ -26,10 +25,7 @@
   /* --- TELA INICIAL --- */
   #intro {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    inset: 0;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -37,22 +33,17 @@
     background: inherit;
   }
 
-  #intro img {
-    width: 80%;
-    max-width: 400px; /* logo grande, mas proporcional */
-    height: auto;
-    margin-bottom: 30px;
-  }
-
   #intro button {
-    font-size: 18px; /* tamanho menor e proporcional */
-    padding: 15px 25px;
+    font-size: 18px;
+    padding: 14px 28px;
     cursor: pointer;
     background: #6a1b9a;
     color: #fff;
     border: none;
     border-radius: 10px;
     transition: background 0.3s;
+    width: auto;
+    max-width: 260px;
   }
 
   #intro button:hover {
@@ -67,23 +58,15 @@
     width: 100%;
     min-height: 100vh;
     background: inherit;
-    padding-top: 20px;
+    padding-top: 40px;
     box-sizing: border-box;
-  }
-
-  #formulario-logo {
-    width: 90%;
-    max-width: 500px;
-    height: auto;
-    margin: 20px auto;
-    display: block;
   }
 
   .card {
     background: #fff;
-    max-width: 500px;
-    width: 90%; /* margens laterais mantidas */
-    padding: 40px 30px;
+    max-width: 420px; /* reduzido */
+    width: 88%;
+    padding: 36px 28px;
     border-radius: 16px;
     box-shadow: 0 15px 40px rgba(0,0,0,0.25);
     text-align: left;
@@ -137,32 +120,29 @@
 
   #status {
     font-size: 14px;
-    margin-top: 6px;
+    margin-top: 10px;
+    text-align: center;
   }
 
   img#preview {
     max-width: 100%;
     margin-top: 10px;
+    border-radius: 8px;
   }
-
 </style>
 </head>
 <body>
 
 <!-- TELA INICIAL -->
 <div id="intro">
-  <!-- Substitua esta URL pela sua nova logo do Canva -->
-  <img src="https://tfbmsm.vtexassets.com/assets/vtex.file-manager-graphql/images/339595d6-1e8d-4ba1-a477-f0abfddc7d49___27fff744076908e95c038561a5cb6669.jpg" alt="Logo Nichele Tintas">
   <button onclick="mostrarFormulario()">Acessar questionário</button>
 </div>
 
 <!-- FORMULÁRIO -->
 <div id="formulario">
-  <!-- Logo no topo do formulário -->
-  <img id="formulario-logo" src="https://tfbmsm.vtexassets.com/assets/vtex.file-manager-graphql/images/339595d6-1e8d-4ba1-a477-f0abfddc7d49___27fff744076908e95c038561a5cb6669.jpg" alt="Logo Nichele Tintas">
-
   <div class="card">
     <h2>Validação de Visita</h2>
+
     <div class="card-content">
       <label>Vendedor</label>
       <input id="vendedor">
@@ -217,15 +197,13 @@
 let latitude, longitude, endereco = "";
 let fotoBase64 = null;
 
-// Substitua aqui pela URL do seu WebApp Google Apps Script
 const API_URL = "https://script.google.com/macros/s/AKfycbw3kM0KukrHTN_c0K0fQQXJAKFxBFVd4EmOyuopHBsmrac9agIgrBZvWxzUnIdo_xzG9w/exec";
 
-// --- TRANSIÇÃO TELA INICIAL → FORMULÁRIO ---
 function mostrarFormulario() {
   const intro = document.getElementById("intro");
   const form = document.getElementById("formulario");
 
-  intro.style.transition = "opacity 1s"; // tempo dobrado
+  intro.style.transition = "opacity 1s";
   intro.style.opacity = 0;
 
   setTimeout(() => {
@@ -237,7 +215,6 @@ function mostrarFormulario() {
   }, 1000);
 }
 
-// --- LOCALIZAÇÃO ---
 function capturarLocalizacao() {
   navigator.geolocation.getCurrentPosition(async pos => {
     latitude = pos.coords.latitude;
@@ -252,7 +229,6 @@ function capturarLocalizacao() {
   }, () => alert("Erro ao obter localização"));
 }
 
-// --- CÂMERA ---
 function abrirCamera() {
   document.getElementById("camera").click();
 }
@@ -266,7 +242,6 @@ document.getElementById("camera").addEventListener("change", e => {
   reader.readAsDataURL(e.target.files[0]);
 });
 
-// --- ENVIO ---
 function enviar() {
   if (!latitude || !fotoBase64) {
     alert("Falta localização ou foto");
@@ -289,16 +264,11 @@ function enviar() {
     })
   })
   .then(r => r.json())
-  .then(res => {
-    const statusEl = document.getElementById("status");
-    statusEl.innerHTML = `
+  .then(() => {
+    document.getElementById("status").innerHTML = `
       <strong>Visita confirmada!</strong><br><br>
-      <button id="fecharBtn">Fechar pesquisa</button>
+      <button onclick="window.close()">Fechar pesquisa</button>
     `;
-    document.getElementById("fecharBtn").addEventListener("click", () => {
-      window.open("", "_self");
-      window.close();
-    });
   })
   .catch(() => {
     document.getElementById("status").innerText = "Erro ao enviar dados";
