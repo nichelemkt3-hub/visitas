@@ -14,14 +14,15 @@
     overflow-x: hidden;
   }
 
-  /* --- PRIMEIRA TELA --- */
+  /* --- PRIMEIRA TELA COM CAPA --- */
   #intro {
     position: fixed;
     inset: 0;
     display: flex;
     justify-content: center;
     align-items: center;
-    background: linear-gradient(120deg, #6a1b9a, #9c27b0, #ffca28);
+    background: url('capa.png') no-repeat center top;
+    background-size: cover;
     z-index: 3;
   }
 
@@ -57,7 +58,7 @@
     top: 0;
     left: 0;
     width: 100%;
-    height: 50%;
+    height: 50%; /* metade da tela */
     background: url('topo.png') no-repeat top center;
     background-size: cover;
     z-index: 0;
@@ -65,10 +66,10 @@
 
   #fundo-baixo {
     position: absolute;
-    top: 50%;
+    top: 50%; /* começa exatamente onde topo termina */
     left: 0;
     width: 100%;
-    height: 50%;
+    height: 50%; /* metade inferior */
     background: url('baixo.png') no-repeat bottom center;
     background-size: cover;
     z-index: 0;
@@ -97,7 +98,7 @@
     text-align: left;
     opacity: 0;
     transform: translateY(40px);
-    transition: all 1.0s ease; /* transição rápida */
+    transition: all 1.0s ease;
   }
 
   .progress {
