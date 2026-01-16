@@ -3,143 +3,136 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Validação de Visita – Nichele Tintas</title>
+<title>Validação de Visita</title>
 
 <style>
-  html, body {
-    margin: 0;
-    padding: 0;
-    font-family: Arial, sans-serif;
-    min-height: 100%;
-    background: linear-gradient(180deg, #6a1b9a, #9c27b0, #ffca28);
-    color: #333;
-  }
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  min-height: 100%;
+  background: linear-gradient(120deg, #6a1b9a, #9c27b0, #ffca28);
+  background-size: 200% 200%;
+  animation: bgMove 18s ease infinite;
+}
 
-  body {
-    text-align: center;
-    overflow-x: hidden;
-  }
+@keyframes bgMove {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
 
-  /* --- TELA INICIAL --- */
-  #intro {
-    position: fixed;
-    inset: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: inherit;
-    transition: opacity 1.2s ease, filter 1.2s ease;
-    z-index: 10;
-  }
+#intro {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: opacity 1.2s ease, filter 1.2s ease;
+}
 
-  #intro.fade-out {
-    opacity: 0;
-    filter: blur(12px);
-    pointer-events: none;
-  }
+#intro.fade-out {
+  opacity: 0;
+  filter: blur(14px);
+  pointer-events: none;
+}
 
-  #intro button {
-    font-size: 18px;
-    padding: 14px 28px;
-    background: #6a1b9a;
-    color: #fff;
-    border: none;
-    border-radius: 10px;
-    max-width: 260px;
-    cursor: pointer;
-  }
+#intro button {
+  font-size: 18px;
+  padding: 14px 28px;
+  background: #6a1b9a;
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+}
 
-  /* --- FORMULÁRIO --- */
-  #formulario {
-    padding: 40px 20px 60px;
-    box-sizing: border-box;
-    opacity: 0;
-    filter: blur(14px);
-    transform: scale(0.97);
-    transition: opacity 1.6s ease, filter 1.6s ease, transform 1.6s ease;
-    display: none;
-  }
+#formulario {
+  display: none;
+  padding: 40px 20px 60px;
+  opacity: 0;
+  filter: blur(14px);
+  transform: translateY(14px);
+  transition: all 1.6s ease;
+}
 
-  #formulario.ativo {
-    opacity: 1;
-    filter: blur(0);
-    transform: scale(1);
-  }
+#formulario.ativo {
+  opacity: 1;
+  filter: blur(0);
+  transform: translateY(0);
+}
 
-  .card {
-    background: #fff;
-    max-width: 380px;
-    margin: 0 auto;
-    padding: 32px 24px;
-    border-radius: 18px;
-    box-shadow: 0 18px 45px rgba(0,0,0,0.25);
-    text-align: left;
-  }
+.card {
+  background: #fff;
+  max-width: 380px;
+  margin: 0 auto;
+  padding: 28px 24px 32px;
+  border-radius: 20px;
+  box-shadow: 0 18px 45px rgba(0,0,0,0.25);
+  text-align: left;
+}
 
-  h2 {
-    text-align: center;
-    color: #6a1b9a;
-    margin-bottom: 20px;
-  }
+.progress {
+  height: 4px;
+  background: #e0e0e0;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 16px;
+}
 
-  label {
-    font-weight: bold;
-    margin-top: 14px;
-    display: block;
-  }
+.progress span {
+  display: block;
+  height: 100%;
+  width: 0%;
+  background: #2e7d32;
+  transition: width 0.4s ease;
+}
 
-  input, select, textarea, button {
-    width: 100%;
-    padding: 12px;
-    margin-top: 6px;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-    font-size: 15px;
-    box-sizing: border-box;
-  }
+label {
+  font-weight: bold;
+  margin-top: 14px;
+  display: block;
+}
 
-  textarea {
-    resize: vertical;
-  }
+input, select, textarea, button {
+  width: 100%;
+  padding: 12px;
+  margin-top: 6px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  font-size: 15px;
+  box-sizing: border-box;
+}
 
-  button {
-    background: #6a1b9a;
-    color: #fff;
-    border: none;
-    margin-top: 16px;
-    font-weight: bold;
-    cursor: pointer;
-    font-size: 16px;
-  }
+button {
+  background: #6a1b9a;
+  color: #fff;
+  border: none;
+  margin-top: 16px;
+  font-weight: bold;
+}
 
-  button:hover {
-    background: #4a148c;
-  }
+button.sucesso { background: #2e7d32; }
+button:disabled { opacity: 0.7; }
 
-  #status {
-    margin-top: 16px;
-    text-align: center;
-    font-size: 14px;
-  }
+.final {
+  text-align: center;
+}
 
-  #preview {
-    margin-top: 10px;
-    width: 100%;
-    border-radius: 8px;
-  }
+.final .check {
+  font-size: 56px;
+  color: #2e7d32;
+}
 </style>
 </head>
 <body>
 
-<!-- TELA INICIAL -->
 <div id="intro">
   <button onclick="mostrarFormulario()">Acessar questionário</button>
 </div>
 
-<!-- FORMULÁRIO -->
 <div id="formulario">
-  <div class="card">
-    <h2>Validação de Visita</h2>
+  <div class="card" id="card">
+    <div class="progress"><span id="progressBar"></span></div>
 
     <label>Vendedor</label>
     <input id="vendedor">
@@ -175,40 +168,37 @@
     </select>
 
     <label>Observações</label>
-    <textarea id="observacoes" rows="3"></textarea>
+    <textarea id="observacoes"></textarea>
 
-    <button onclick="capturarLocalizacao()">📍 Capturar Localização</button>
+    <button id="btnLoc" onclick="capturarLocalizacao()">📍 Capturar Localização</button>
     <p id="localizacao"></p>
 
     <button onclick="abrirCamera()">📸 Tirar Foto</button>
-    <input type="file" id="camera" accept="image/*" capture="environment" hidden>
-    <img id="preview">
+    <input type="file" id="camera" hidden accept="image/*" capture="environment">
 
-    <button onclick="enviar()">✅ Confirmar Visita</button>
-    <p id="status"></p>
+    <button id="btnEnviar" onclick="enviar()">✅ Confirmar Visita</button>
   </div>
 </div>
 
 <script>
-let latitude, longitude, endereco = "";
-let fotoBase64 = null;
+let latitude, longitude, endereco = "", fotoBase64 = null;
 
 const API_URL = "https://script.google.com/macros/s/AKfycbw3kM0KukrHTN_c0K0fQQXJAKFxBFVd4EmOyuopHBsmrac9agIgrBZvWxzUnIdo_xzG9w/exec";
 
+const campos = ["vendedor","codigoVendedor","loja","tipoCliente","statusVisita","observacoes"];
+campos.forEach(id => document.getElementById(id).addEventListener("input", atualizarProgresso));
+
+function atualizarProgresso() {
+  const p = campos.filter(id => document.getElementById(id).value).length;
+  progressBar.style.width = (p / campos.length) * 100 + "%";
+}
+
 function mostrarFormulario() {
-  const intro = document.getElementById("intro");
-  const formulario = document.getElementById("formulario");
-
   intro.classList.add("fade-out");
-
   setTimeout(() => {
     intro.style.display = "none";
     formulario.style.display = "block";
-
-    // pequeno delay para o CSS animar corretamente
-    setTimeout(() => {
-      formulario.classList.add("ativo");
-    }, 50);
+    setTimeout(() => formulario.classList.add("ativo"), 50);
   }, 1200);
 }
 
@@ -221,28 +211,21 @@ function capturarLocalizacao() {
     const data = await res.json();
     endereco = data.display_name || "";
 
+    btnLoc.textContent = "Localização capturada ✅";
+    btnLoc.classList.add("sucesso");
     localizacao.innerText = endereco;
   });
 }
 
-function abrirCamera() {
-  camera.click();
-}
-
 camera.addEventListener("change", e => {
-  const reader = new FileReader();
-  reader.onload = () => {
-    fotoBase64 = reader.result;
-    preview.src = fotoBase64;
-  };
-  reader.readAsDataURL(e.target.files[0]);
+  const r = new FileReader();
+  r.onload = () => fotoBase64 = r.result;
+  r.readAsDataURL(e.target.files[0]);
 });
 
 function enviar() {
-  if (!latitude || !fotoBase64) {
-    alert("Falta localização ou foto");
-    return;
-  }
+  btnEnviar.textContent = "Enviando...";
+  btnEnviar.disabled = true;
 
   fetch(API_URL, {
     method: "POST",
@@ -255,11 +238,24 @@ function enviar() {
       observacoes: observacoes.value,
       lat: latitude,
       lng: longitude,
-      endereco,
-      fotoBase64
+      endereco: endereco,
+      fotoBase64: fotoBase64
     })
-  }).then(() => {
-    status.innerHTML = "<strong>Visita confirmada!</strong>";
+  })
+  .then(r => r.json())
+  .then(() => {
+    card.innerHTML = `
+      <div class="final">
+        <div class="check">✅</div>
+        <h2>Visita registrada</h2>
+        <p>Dados enviados com sucesso</p>
+        <button onclick="window.close()">Finalizar</button>
+      </div>
+    `;
+  })
+  .catch(() => {
+    btnEnviar.textContent = "Erro ao enviar";
+    btnEnviar.disabled = false;
   });
 }
 </script>
