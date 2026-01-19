@@ -135,7 +135,7 @@ button {
 
 /* ================= CONFIRMAÇÃO ================= */
 .botao-confirmado {
-  background-color: #2ecc71 !important;
+  background-color: #3fae6a !important; /* verde mais sóbrio */
   color: #fff !important;
 }
 
@@ -159,6 +159,13 @@ button {
   width: 0%;
   background: #2e7d32;
   transition: width 0.4s ease;
+}
+
+#statusEnvio {
+  font-size: 13px;
+  text-align: center;
+  margin-top: 8px;
+  color: #555;
 }
 </style>
 </head>
@@ -188,7 +195,7 @@ button {
     <input id="nomeCliente">
 
     <label>Contato do Cliente</label>
-    <input id="contatoCliente" maxlength="15">
+    <input id="contatoCliente" inputmode="numeric" pattern="[0-9]*" maxlength="15">
 
     <label>Loja</label>
     <select id="loja">
@@ -220,11 +227,13 @@ button {
     <label>Observações</label>
     <textarea id="observacoes" rows="3"></textarea>
 
-    <button id="btnLocalizacao" onclick="capturarLocalizacao()">Capturar localização</button>
-    <button id="btnFoto" onclick="abrirCamera()">Tirar foto 📷</button>
+    <button id="btnLocalizacao" onclick="capturarLocalizacao()">📍 Capturar localização</button>
+
+    <button id="btnFoto" onclick="abrirCamera()">📷 Tirar foto</button>
     <input type="file" id="camera" hidden accept="image/*" capture="environment">
 
     <button id="btnEnviar" onclick="enviar()">Confirmar visita</button>
+    <div id="statusEnvio"></div>
   </div>
 </div>
 
@@ -293,6 +302,7 @@ function abrirCamera() {
 
 /* envio */
 function enviar() {
+  statusEnvio.textContent = "Enviando relatório...";
   fetch(API_URL, {
     method: "POST",
     body: JSON.stringify({
@@ -309,6 +319,7 @@ function enviar() {
       fotoBase64: fotoBase64
     })
   }).then(() => {
+    statusEnvio.textContent = "";
     btnEnviar.textContent = "Visita confirmada";
     btnEnviar.classList.add("botao-confirmado");
   });
