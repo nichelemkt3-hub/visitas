@@ -59,7 +59,6 @@ html, body {
   transition: opacity 2.2s ease;
 }
 
-/* FUNDO */
 #fundo-topo, #fundo-baixo {
   position: absolute;
   left: 0;
@@ -151,11 +150,13 @@ button {
   transition: width 0.4s ease;
 }
 
+/* STATUS */
 #localizacao,
 #fotoStatus,
 #envioStatus {
   font-size: 13px;
   margin-top: 6px;
+  text-align: center;
 }
 </style>
 </head>
@@ -181,7 +182,11 @@ button {
     <input id="vendedor">
 
     <label>Código do Vendedor</label>
-    <input id="codigoVendedor">
+    <input
+      id="codigoVendedor"
+      inputmode="numeric"
+      oninput="this.value=this.value.replace(/\\D/g,'')"
+    >
 
     <label>Nome do Cliente</label>
     <input id="nomeCliente">
@@ -240,7 +245,7 @@ button {
 <script>
 let latitude, longitude, endereco = "", fotoBase64 = null;
 
-const API_URL = "https://script.google.com/macros/s/AKfycbyagsxcIyYxJiHaWJjliBlhDe4XQoHu_tbpP5APg3iKiXksY6i9MO2-6DiHsh8u0RQajA/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbz6qmg-D8bFrxNEJPqID53ySl9NivMDyBww2vC8ipx_EkdnA8zRR-itGc2vapz6w_N2aw/exec";
 
 const campos = [
   "vendedor",
@@ -278,10 +283,12 @@ function capturarLocalizacao() {
       longitude = pos.coords.longitude;
 
       const r = await fetch(
-        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
+        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&addressdetails=1`
       );
       const d = await r.json();
-      endereco = d.display_name || "";
+
+      const a = d.address || {};
+      endereco = `${a.road || ""}, ${a.house_number || ""} - ${a.suburb || ""}, ${a.city || a.town || ""} - ${a.state_code || ""}, ${a.postcode || ""}`;
 
       btnLoc.textContent = "Localização capturada ✅";
       btnLoc.style.background = "#2e7d32";
@@ -303,7 +310,7 @@ camera.addEventListener("change", e => {
   const r = new FileReader();
   r.onload = () => {
     fotoBase64 = r.result;
-    fotoStatus.innerText = "📸 Foto confirmada";
+    fotoStatus.innerText = "✔ Foto confirmada";
   };
   r.readAsDataURL(e.target.files[0]);
 });
@@ -334,7 +341,7 @@ function enviar() {
   })
   .then(r => r.json())
   .then(() => {
-    envioStatus.innerText = "✅ Visita confirmada";
+    envioStatus.innerText = "✔ Visita confirmada";
   })
   .catch(() => {
     envioStatus.innerText = "❌ Erro ao confirmar visita";
