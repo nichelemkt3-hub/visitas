@@ -59,7 +59,7 @@ html, body {
   transition: opacity 2.2s ease;
 }
 
-/* 🔹 FUNDO COM DUAS IMAGENS CONTÍNUAS SEM GAP */
+/* FUNDO */
 #fundo-topo, #fundo-baixo {
   position: absolute;
   left: 0;
@@ -160,14 +160,11 @@ button {
 
 <body>
 
-<!-- PRIMEIRA TELA -->
 <div id="intro">
   <button onclick="mostrarFormulario()">Acessar Questionário</button>
 </div>
 
-<!-- SEGUNDA TELA -->
 <div id="formulario">
-  <!-- 🔹 Imagens de fundo contínuas -->
   <div id="fundo-topo"></div>
   <div id="fundo-baixo"></div>
 
@@ -183,6 +180,19 @@ button {
 
     <label>Código do Vendedor</label>
     <input id="codigoVendedor">
+
+    <!-- 🔹 NOVOS CAMPOS (ANTES DA LOJA) -->
+    <label>Nome do Cliente</label>
+    <input id="nomeCliente">
+
+    <label>Contato do Cliente</label>
+    <input
+      id="contatoCliente"
+      inputmode="numeric"
+      placeholder="(00) 00000-0000"
+      maxlength="15"
+      oninput="formatarTelefone(this)"
+    >
 
     <label>Loja</label>
     <select id="loja">
@@ -227,10 +237,19 @@ button {
 <script>
 let latitude, longitude, endereco = "", fotoBase64 = null;
 
-const API_URL = "https://script.google.com/macros/s/AKfycbw3kM0KukrHTN_c0K0fQQXJAKFxBFVd4EmOyuopHBsmrac9agIgrBZvWxzUnIdo_xzG9w/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbyagsxcIyYxJiHaWJjliBlhDe4XQoHu_tbpP5APg3iKiXksY6i9MO2-6DiHsh8u0RQajA/exec";
 
-/* progresso */
-const campos = ["vendedor","codigoVendedor","loja","tipoCliente","statusVisita","observacoes"];
+const campos = [
+  "vendedor",
+  "codigoVendedor",
+  "nomeCliente",
+  "contatoCliente",
+  "loja",
+  "tipoCliente",
+  "statusVisita",
+  "observacoes"
+];
+
 campos.forEach(id =>
   document.getElementById(id).addEventListener("input", atualizarProgresso)
 );
@@ -240,47 +259,61 @@ function atualizarProgresso() {
   progressBar.style.width = (preenchidos / campos.length) * 100 + "%";
 }
 
-/* transição */
 function mostrarFormulario() {
   intro.classList.add("fade-out");
   formulario.classList.add("ativo");
-
   setTimeout(() => {
     card.style.transform = "translateY(0)";
     card.style.opacity = "1";
   }, 120);
 }
 
-/* localização */
 function capturarLocalizacao() {
-  navigator.geolocation.getCurrentPosition(async pos => {
-    latitude = pos.coords.latitude;
-    longitude = pos.coords.longitude;
+  navigator.geolocation.getCurrentPosition(
+    async pos => {
+      latitude = pos.coords.latitude;
+      longitude = pos.coords.longitude;
 
-    const r = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`);
-    const d = await r.json();
-    endereco = d.display_name || "";
+      const r = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
+      );
+      const d = await r.json();
+      endereco = d.display_name || "";
 
-    btnLoc.textContent = "Localização capturada ✅";
-    btnLoc.style.background = "#2e7d32";
-    localizacao.innerText = endereco;
-  });
+      btnLoc.textContent = "Localização capturada ✅";
+      btnLoc.style.background = "#2e7d32";
+      localizacao.innerText = endereco;
+    },
+    () => alert("Erro ao capturar localização."),
+    { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+  );
 }
 
-/* câmera */
+function formatarTelefone(campo) {
+  let v = campo.value.replace(/\D/g, "").slice(0, 11);
+  if (v.length >= 2) v = `(${v.slice(0,2)}) ${v.slice(2)}`;
+  if (v.length >= 10) v = v.replace(/(\d{5})(\d)/, "$1-$2");
+  campo.value = v;
+}
+
 camera.addEventListener("change", e => {
   const r = new FileReader();
   r.onload = () => fotoBase64 = r.result;
   r.readAsDataURL(e.target.files[0]);
 });
 
-/* envio */
+function abrirCamera() {
+  camera.click();
+}
+
 function enviar() {
   fetch(API_URL, {
     method: "POST",
     body: JSON.stringify({
       vendedor: vendedor.value,
       codigoVendedor: codigoVendedor.value,
+      nomeCliente: nomeCliente.value,
+      contatoCliente: contatoCliente.value,
       loja: loja.value,
       tipoCliente: tipoCliente.value,
       statusVisita: statusVisita.value,
@@ -291,10 +324,6 @@ function enviar() {
       fotoBase64: fotoBase64
     })
   });
-}
-
-function abrirCamera() {
-  camera.click();
 }
 </script>
 
