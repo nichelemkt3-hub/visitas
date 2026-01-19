@@ -133,6 +133,17 @@ button {
   cursor: pointer;
 }
 
+/* ================= CONFIRMAÇÃO ================= */
+.botao-confirmado {
+  background-color: #2ecc71 !important;
+  color: #fff !important;
+}
+
+.botao-confirmado::after {
+  content: " ✅";
+  margin-left: 6px;
+}
+
 /* ================= PROGRESSO ================= */
 .progress {
   height: 4px;
@@ -148,15 +159,6 @@ button {
   width: 0%;
   background: #2e7d32;
   transition: width 0.4s ease;
-}
-
-/* STATUS */
-#localizacao,
-#fotoStatus,
-#envioStatus {
-  font-size: 13px;
-  margin-top: 6px;
-  text-align: center;
 }
 </style>
 </head>
@@ -174,31 +176,19 @@ button {
   <div class="card" id="card">
     <h2>Visitas Externas</h2>
 
-    <div class="progress">
-      <span id="progressBar"></span>
-    </div>
+    <div class="progress"><span id="progressBar"></span></div>
 
     <label>Vendedor</label>
     <input id="vendedor">
 
     <label>Código do Vendedor</label>
-    <input
-      id="codigoVendedor"
-      inputmode="numeric"
-      oninput="this.value=this.value.replace(/\\D/g,'')"
-    >
+    <input id="codigoVendedor" inputmode="numeric" pattern="[0-9]*">
 
     <label>Nome do Cliente</label>
     <input id="nomeCliente">
 
     <label>Contato do Cliente</label>
-    <input
-      id="contatoCliente"
-      inputmode="numeric"
-      placeholder="(00) 00000-0000"
-      maxlength="15"
-      oninput="formatarTelefone(this)"
-    >
+    <input id="contatoCliente" maxlength="15">
 
     <label>Loja</label>
     <select id="loja">
@@ -230,32 +220,22 @@ button {
     <label>Observações</label>
     <textarea id="observacoes" rows="3"></textarea>
 
-    <button id="btnLoc" onclick="capturarLocalizacao()">📍 Capturar Localização</button>
-    <p id="localizacao"></p>
-
-    <button onclick="abrirCamera()">📸 Tirar Foto</button>
+    <button id="btnLocalizacao" onclick="capturarLocalizacao()">Capturar localização</button>
+    <button id="btnFoto" onclick="abrirCamera()">Tirar foto 📷</button>
     <input type="file" id="camera" hidden accept="image/*" capture="environment">
-    <p id="fotoStatus"></p>
 
-    <button id="btnEnviar" onclick="enviar()">✅ Confirmar Visita</button>
-    <p id="envioStatus"></p>
+    <button id="btnEnviar" onclick="enviar()">Confirmar visita</button>
   </div>
 </div>
 
 <script>
-let latitude, longitude, endereco = "", fotoBase64 = null;
+let latitude, longitude, fotoBase64 = null;
 
 const API_URL = "https://script.google.com/macros/s/AKfycbz6qmg-D8bFrxNEJPqID53ySl9NivMDyBww2vC8ipx_EkdnA8zRR-itGc2vapz6w_N2aw/exec";
 
 const campos = [
-  "vendedor",
-  "codigoVendedor",
-  "nomeCliente",
-  "contatoCliente",
-  "loja",
-  "tipoCliente",
-  "statusVisita",
-  "observacoes"
+  "vendedor","codigoVendedor","nomeCliente","contatoCliente",
+  "loja","tipoCliente","statusVisita","observacoes"
 ];
 
 campos.forEach(id =>
@@ -276,41 +256,33 @@ function mostrarFormulario() {
   }, 120);
 }
 
+/* máscara telefone */
+contatoCliente.addEventListener("input", e => {
+  let v = e.target.value.replace(/\D/g,"").slice(0,11);
+  if (v.length > 6)
+    e.target.value = `(${v.slice(0,2)}) ${v.slice(2,7)}-${v.slice(7)}`;
+  else if (v.length > 2)
+    e.target.value = `(${v.slice(0,2)}) ${v.slice(2)}`;
+  else
+    e.target.value = v;
+});
+
+/* localização */
 function capturarLocalizacao() {
-  navigator.geolocation.getCurrentPosition(
-    async pos => {
-      latitude = pos.coords.latitude;
-      longitude = pos.coords.longitude;
-
-      const r = await fetch(
-        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&addressdetails=1`
-      );
-      const d = await r.json();
-
-      const a = d.address || {};
-      endereco = `${a.road || ""}, ${a.house_number || ""} - ${a.suburb || ""}, ${a.city || a.town || ""} - ${a.state_code || ""}, ${a.postcode || ""}`;
-
-      btnLoc.textContent = "Localização capturada ✅";
-      btnLoc.style.background = "#2e7d32";
-      localizacao.innerText = endereco;
-    },
-    () => alert("Erro ao capturar localização."),
-    { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
-  );
+  navigator.geolocation.getCurrentPosition(pos => {
+    latitude = pos.coords.latitude;
+    longitude = pos.coords.longitude;
+    btnLocalizacao.classList.add("botao-confirmado");
+  });
 }
 
-function formatarTelefone(campo) {
-  let v = campo.value.replace(/\D/g, "").slice(0, 11);
-  if (v.length >= 2) v = `(${v.slice(0,2)}) ${v.slice(2)}`;
-  if (v.length >= 10) v = v.replace(/(\d{5})(\d)/, "$1-$2");
-  campo.value = v;
-}
-
+/* câmera */
 camera.addEventListener("change", e => {
   const r = new FileReader();
   r.onload = () => {
     fotoBase64 = r.result;
-    fotoStatus.innerText = "✔ Foto confirmada";
+    btnFoto.textContent = "Foto confirmada";
+    btnFoto.classList.add("botao-confirmado");
   };
   r.readAsDataURL(e.target.files[0]);
 });
@@ -319,9 +291,8 @@ function abrirCamera() {
   camera.click();
 }
 
+/* envio */
 function enviar() {
-  envioStatus.innerText = "Enviando...";
-
   fetch(API_URL, {
     method: "POST",
     body: JSON.stringify({
@@ -335,16 +306,11 @@ function enviar() {
       observacoes: observacoes.value,
       lat: latitude,
       lng: longitude,
-      endereco: endereco,
       fotoBase64: fotoBase64
     })
-  })
-  .then(r => r.json())
-  .then(() => {
-    envioStatus.innerText = "✔ Visita confirmada";
-  })
-  .catch(() => {
-    envioStatus.innerText = "❌ Erro ao confirmar visita";
+  }).then(() => {
+    btnEnviar.textContent = "Visita confirmada";
+    btnEnviar.classList.add("botao-confirmado");
   });
 }
 </script>
