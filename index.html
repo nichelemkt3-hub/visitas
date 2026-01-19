@@ -151,7 +151,9 @@ button {
   transition: width 0.4s ease;
 }
 
-#localizacao {
+#localizacao,
+#fotoStatus,
+#envioStatus {
   font-size: 13px;
   margin-top: 6px;
 }
@@ -181,7 +183,6 @@ button {
     <label>Código do Vendedor</label>
     <input id="codigoVendedor">
 
-    <!-- 🔹 NOVOS CAMPOS (ANTES DA LOJA) -->
     <label>Nome do Cliente</label>
     <input id="nomeCliente">
 
@@ -229,8 +230,10 @@ button {
 
     <button onclick="abrirCamera()">📸 Tirar Foto</button>
     <input type="file" id="camera" hidden accept="image/*" capture="environment">
+    <p id="fotoStatus"></p>
 
     <button id="btnEnviar" onclick="enviar()">✅ Confirmar Visita</button>
+    <p id="envioStatus"></p>
   </div>
 </div>
 
@@ -298,7 +301,10 @@ function formatarTelefone(campo) {
 
 camera.addEventListener("change", e => {
   const r = new FileReader();
-  r.onload = () => fotoBase64 = r.result;
+  r.onload = () => {
+    fotoBase64 = r.result;
+    fotoStatus.innerText = "📸 Foto confirmada";
+  };
   r.readAsDataURL(e.target.files[0]);
 });
 
@@ -307,6 +313,8 @@ function abrirCamera() {
 }
 
 function enviar() {
+  envioStatus.innerText = "Enviando...";
+
   fetch(API_URL, {
     method: "POST",
     body: JSON.stringify({
@@ -323,6 +331,13 @@ function enviar() {
       endereco: endereco,
       fotoBase64: fotoBase64
     })
+  })
+  .then(r => r.json())
+  .then(() => {
+    envioStatus.innerText = "✅ Visita confirmada";
+  })
+  .catch(() => {
+    envioStatus.innerText = "❌ Erro ao confirmar visita";
   });
 }
 </script>
