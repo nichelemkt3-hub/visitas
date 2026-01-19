@@ -5,6 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Validação de Visita – Nichele Tintas</title>
 
+<!-- Ícone do app / atalho -->
+<link rel="icon" href="iconeapp.png">
+<link rel="apple-touch-icon" href="iconeapp.png">
+
+<!-- Manifest inline -->
+<link rel="manifest" href="manifest.json">
+
 <style>
 html, body {
   margin: 0;
@@ -135,7 +142,7 @@ button {
 
 /* ================= CONFIRMAÇÃO ================= */
 .botao-confirmado {
-  background-color: #3fae6a !important; /* verde mais sóbrio */
+  background-color: #3fae6a !important;
   color: #fff !important;
 }
 
@@ -159,6 +166,13 @@ button {
   width: 0%;
   background: #2e7d32;
   transition: width 0.4s ease;
+}
+
+#enderecoTexto {
+  font-size: 12px;
+  margin-top: 6px;
+  color: #444;
+  line-height: 1.4;
 }
 
 #statusEnvio {
@@ -228,6 +242,7 @@ button {
     <textarea id="observacoes" rows="3"></textarea>
 
     <button id="btnLocalizacao" onclick="capturarLocalizacao()">📍 Capturar localização</button>
+    <p id="enderecoTexto"></p>
 
     <button id="btnFoto" onclick="abrirCamera()">📷 Tirar foto</button>
     <input type="file" id="camera" hidden accept="image/*" capture="environment">
@@ -278,9 +293,16 @@ contatoCliente.addEventListener("input", e => {
 
 /* localização */
 function capturarLocalizacao() {
-  navigator.geolocation.getCurrentPosition(pos => {
+  navigator.geolocation.getCurrentPosition(async pos => {
     latitude = pos.coords.latitude;
     longitude = pos.coords.longitude;
+
+    const r = await fetch(
+      `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
+    );
+    const d = await r.json();
+    enderecoTexto.innerText = d.display_name || "";
+
     btnLocalizacao.classList.add("botao-confirmado");
   });
 }
