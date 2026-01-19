@@ -5,12 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Validação de Visita – Nichele Tintas</title>
 
-<!-- Ícone do app / atalho -->
-<link rel="icon" href="iconeapp.png">
-<link rel="apple-touch-icon" href="iconeapp.png">
-
-<!-- Manifest inline -->
+<!-- PWA -->
 <link rel="manifest" href="manifest.json">
+<link rel="icon" href="iconeapp.png">
+<meta name="theme-color" content="#6a1b9a">
 
 <style>
 html, body {
@@ -21,7 +19,6 @@ html, body {
   overflow-x: hidden;
 }
 
-/* ================= PRIMEIRA TELA ================= */
 #intro {
   position: fixed;
   inset: 0;
@@ -51,7 +48,6 @@ html, body {
   cursor: pointer;
 }
 
-/* ================= SEGUNDA TELA ================= */
 #formulario {
   position: relative;
   opacity: 0;
@@ -92,7 +88,6 @@ html, body {
   pointer-events: auto;
 }
 
-/* ================= CARD ================= */
 .card {
   background: #fff;
   width: 78%;
@@ -112,7 +107,6 @@ html, body {
   margin-bottom: 18px;
 }
 
-/* ================= FORM ================= */
 label {
   font-weight: bold;
   display: block;
@@ -140,18 +134,10 @@ button {
   cursor: pointer;
 }
 
-/* ================= CONFIRMAÇÃO ================= */
-.botao-confirmado {
-  background-color: #3fae6a !important;
-  color: #fff !important;
+button.confirmado {
+  background: #2f7d32;
 }
 
-.botao-confirmado::after {
-  content: " ✅";
-  margin-left: 6px;
-}
-
-/* ================= PROGRESSO ================= */
 .progress {
   height: 4px;
   background: #e0e0e0;
@@ -168,18 +154,15 @@ button {
   transition: width 0.4s ease;
 }
 
-#enderecoTexto {
-  font-size: 12px;
+#localizacao {
+  font-size: 13px;
   margin-top: 6px;
-  color: #444;
-  line-height: 1.4;
 }
 
 #statusEnvio {
-  font-size: 13px;
   text-align: center;
-  margin-top: 8px;
-  color: #555;
+  font-size: 13px;
+  margin-top: 10px;
 }
 </style>
 </head>
@@ -197,7 +180,9 @@ button {
   <div class="card" id="card">
     <h2>Visitas Externas</h2>
 
-    <div class="progress"><span id="progressBar"></span></div>
+    <div class="progress">
+      <span id="progressBar"></span>
+    </div>
 
     <label>Vendedor</label>
     <input id="vendedor">
@@ -209,7 +194,7 @@ button {
     <input id="nomeCliente">
 
     <label>Contato do Cliente</label>
-    <input id="contatoCliente" inputmode="numeric" pattern="[0-9]*" maxlength="15">
+    <input id="contatoCliente" inputmode="numeric" placeholder="(__) _____-____">
 
     <label>Loja</label>
     <select id="loja">
@@ -241,30 +226,24 @@ button {
     <label>Observações</label>
     <textarea id="observacoes" rows="3"></textarea>
 
-    <button id="btnLocalizacao" onclick="capturarLocalizacao()">📍 Capturar localização</button>
-    <p id="enderecoTexto"></p>
+    <button id="btnLoc" onclick="capturarLocalizacao()">📍 Capturar localização</button>
+    <p id="localizacao"></p>
 
-    <button id="btnFoto" onclick="abrirCamera()">📷 Tirar foto</button>
+    <button id="btnFoto" onclick="abrirCamera()">📸 Capturar foto</button>
     <input type="file" id="camera" hidden accept="image/*" capture="environment">
 
-    <button id="btnEnviar" onclick="enviar()">Confirmar visita</button>
+    <button id="btnEnviar" onclick="enviar()">Confirmar visita ✓</button>
     <div id="statusEnvio"></div>
   </div>
 </div>
 
 <script>
-let latitude, longitude, fotoBase64 = null;
+let latitude, longitude, enderecoFormatado = "", fotoBase64 = null;
 
 const API_URL = "https://script.google.com/macros/s/AKfycbz6qmg-D8bFrxNEJPqID53ySl9NivMDyBww2vC8ipx_EkdnA8zRR-itGc2vapz6w_N2aw/exec";
 
-const campos = [
-  "vendedor","codigoVendedor","nomeCliente","contatoCliente",
-  "loja","tipoCliente","statusVisita","observacoes"
-];
-
-campos.forEach(id =>
-  document.getElementById(id).addEventListener("input", atualizarProgresso)
-);
+const campos = ["vendedor","codigoVendedor","nomeCliente","contatoCliente","loja","tipoCliente","statusVisita","observacoes"];
+campos.forEach(id => document.getElementById(id).addEventListener("input", atualizarProgresso));
 
 function atualizarProgresso() {
   const preenchidos = campos.filter(id => document.getElementById(id).value).length;
@@ -280,51 +259,35 @@ function mostrarFormulario() {
   }, 120);
 }
 
-/* máscara telefone */
-contatoCliente.addEventListener("input", e => {
-  let v = e.target.value.replace(/\D/g,"").slice(0,11);
-  if (v.length > 6)
-    e.target.value = `(${v.slice(0,2)}) ${v.slice(2,7)}-${v.slice(7)}`;
-  else if (v.length > 2)
-    e.target.value = `(${v.slice(0,2)}) ${v.slice(2)}`;
-  else
-    e.target.value = v;
-});
-
-/* localização */
 function capturarLocalizacao() {
   navigator.geolocation.getCurrentPosition(async pos => {
     latitude = pos.coords.latitude;
     longitude = pos.coords.longitude;
 
-    const r = await fetch(
-      `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
-    );
+    const r = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`);
     const d = await r.json();
-    enderecoTexto.innerText = d.display_name || "";
 
-    btnLocalizacao.classList.add("botao-confirmado");
+    const a = d.address || {};
+    enderecoFormatado = `${a.road || ""}, ${a.house_number || ""} - ${a.suburb || ""}, ${a.city || a.town || ""} - ${a.state_code || ""}, ${a.postcode || ""}`;
+
+    btnLoc.classList.add("confirmado");
+    btnLoc.textContent = "Capturar localização ✓";
+    localizacao.innerText = enderecoFormatado;
   });
 }
 
-/* câmera */
 camera.addEventListener("change", e => {
   const r = new FileReader();
   r.onload = () => {
     fotoBase64 = r.result;
-    btnFoto.textContent = "Foto confirmada";
-    btnFoto.classList.add("botao-confirmado");
+    btnFoto.classList.add("confirmado");
+    btnFoto.textContent = "Capturar foto ✓";
   };
   r.readAsDataURL(e.target.files[0]);
 });
 
-function abrirCamera() {
-  camera.click();
-}
-
-/* envio */
 function enviar() {
-  statusEnvio.textContent = "Enviando relatório...";
+  statusEnvio.innerText = "Enviando relatório...";
   fetch(API_URL, {
     method: "POST",
     body: JSON.stringify({
@@ -338,13 +301,18 @@ function enviar() {
       observacoes: observacoes.value,
       lat: latitude,
       lng: longitude,
+      endereco: enderecoFormatado,
       fotoBase64: fotoBase64
     })
   }).then(() => {
-    statusEnvio.textContent = "";
-    btnEnviar.textContent = "Visita confirmada";
-    btnEnviar.classList.add("botao-confirmado");
+    btnEnviar.classList.add("confirmado");
+    btnEnviar.textContent = "Confirmar visita ✓";
+    statusEnvio.innerText = "";
   });
+}
+
+function abrirCamera() {
+  camera.click();
 }
 </script>
 
