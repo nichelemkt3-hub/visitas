@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+  <h2>Registrar Visita</h2>
+
+  Cliente:<br>
+  <input id="cliente"><br><br>
+
+  Endereço:<br>
+  <input id="endereco"><br><br>
+
+  Motivo:<br>
+  <input id="motivo"><br><br>
+
+  Observações:<br>
+  <textarea id="obs"></textarea><br><br>
+
+  <button onclick="registrarVisita()">Salvar visita</button>
+
+  <script>
+    const nome = sessionStorage.getItem("nome");
+    const codigo = sessionStorage.getItem("codigo");
+
+    function registrarVisita() {
+      navigator.geolocation.getCurrentPosition(pos => {
+        fetch("https://script.google.com/macros/s/AKfycbwn9rC79QFIe0_at1uqDVsKBIyUQR7THhUekAEABS1BknNQXwz6xbBdQ8ZOuhSr_3qkTg/exec", {
+          method: "POST",
+          body: JSON.stringify({
+            tipo: "visita",
+            nome,
+            codigo,
+            cliente: cliente.value,
+            endereco: endereco.value,
+            motivo: motivo.value,
+            obs: obs.value,
+            lat: pos.coords.latitude,
+            long: pos.coords.longitude
+          })
+        }).then(() => alert("Visita registrada"));
+      });
+    }
+  </script>
+</body>
+</html>
