@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+  <h2>Controle de Jornada</h2>
+
+  <input id="nome" placeholder="Nome"><br><br>
+  <input id="codigo" placeholder="Código do vendedor"><br><br>
+
+  <button onclick="entrar()">Acessar questionário</button>
+
+  <script>
+    function entrar() {
+      const nome = document.getElementById("nome").value;
+      const codigo = document.getElementById("codigo").value;
+
+      if (!nome || !codigo) {
+        alert("Preencha nome e código");
+        return;
+      }
+
+      sessionStorage.setItem("nome", nome);
+      sessionStorage.setItem("codigo", codigo);
+
+      window.location.href = "menu.html";
+    }
+  </script>
+</body>
+</html>
